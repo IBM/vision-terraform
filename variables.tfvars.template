@@ -1,4 +1,0 @@
-ibmcloud_api_key    = "YOURAPIKEY" #note that this needs to be in the demo3 env not production for now...
-ibmcloud_region     = "us-south"
-ibmcloud_zone       = "us-south-3"
-vpc_name            = "powerai-vpc"
