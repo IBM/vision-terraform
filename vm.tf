@@ -49,6 +49,9 @@ variable "vision_tar_name" {
 //grand plan:
 /*
   1. switch COS secrets to be variables. See if this works, and if the provisioning system will really hide a variable
+  2. try and create an offering and validate it.
+  3. for some reason validation is failing
+  4. try and simplify the variables and just take it down to 2 variables... 1 hidden with a value (not required) and 1 visible
 */
 
 //disable configuration for the vpc_zone
@@ -80,7 +83,7 @@ resource "ibm_is_subnet" "subnet" {
   vpc = "${ibm_is_vpc.vpc.id}"
   zone = "${local.vpc_zone}"
   ip_version = "ipv4"
-  total_ipv4_address_count = 256
+  total_ipv4_address_count = 32
 }
 
 #Create an SSH key which will be used for provisioning by this template, and for debug purposes
