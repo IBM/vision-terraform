@@ -25,7 +25,7 @@ variable "ibmcloud_zone" {
 #################################################
 
 provider "ibm" {
-    version          = ">= 0.17.6"
+    version          = ">= 0.20"
     ibmcloud_api_key = "${var.ibmcloud_api_key}"
     generation       = "2"
     region           = "us-south" //this will eventually need to be a selection by the user
