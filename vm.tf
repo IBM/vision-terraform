@@ -13,6 +13,11 @@
 #
 ################################################################
 
+variable "vision_version" {
+  description = "V.R.M.F of PowerAI Vision"
+  default = "1.1.5.0"
+}
+
 variable "vpc_basename" {
   description = "Denotes the name of the VPC that PowerAI Vision will be deployed into. Resources associated with PowerAI Vision will be prepended with this name."
   default = "powerai-vision-trial"
@@ -32,18 +37,18 @@ variable "cos_secret_access_key" {
 }
 
 variable "cos_bucket_base" {
-  description = "HTTP URL for COS bucket containing install media (e.g. http://region/bucket)"
+  description = "HTTP URL for COS bucket containing install media (e.g. http://region/bucket with no trailing slash)"
 }
 
 variable "vision_deb_name" {
   description = "Install debian name (e.g. powerai-vision-1.1.5~trial.deb)"
-  default = "powerai-vision_1.1.5.0-488.a6a155d~trial_ppc64el.deb"
+  default = "powerai-vision_version.deb"
 }
 
 
 variable "vision_tar_name" {
   description = "Install images name (e.g. powerai-vision-1.1.5-images.tar)"
-  default = "powerai-vision-images-1.1.5.0.tar"
+  default = "powerai-vision-images-version.tar"
 }
 
 //grand plan:
@@ -73,14 +78,14 @@ locals {
 }
 
 #Create a VPC for the application
-resource "ibm_is_vpc" "vpc" {
+resource "ibm_is_vpc" "vision_vpc" {
   name = "${var.vpc_basename}-vpc1"
 }
 
 #Create a subnet for the application
 resource "ibm_is_subnet" "subnet" {
   name = "${var.vpc_basename}-subnet1"
-  vpc = "${ibm_is_vpc.vpc.id}"
+  vpc = "${ibm_is_vpc.vision_vpc.id}"
   zone = "${local.vpc_zone}"
   ip_version = "ipv4"
   total_ipv4_address_count = 32
@@ -95,7 +100,7 @@ resource "ibm_is_ssh_key" "public_key" {
 #Create a public floating IP so that the app is available on the Internet
 resource "ibm_is_floating_ip" "fip1" {
   name = "${var.vpc_basename}-subnet-fip1"
-  target = "${ibm_is_instance.vm.primary_network_interface.0.id}"
+  target = "${ibm_is_instance.vision_vm.primary_network_interface.0.id}"
 }
 
 #Enable ssh into the instance for debug
@@ -103,7 +108,7 @@ resource "ibm_is_security_group_rule" "sg1-tcp-rule" {
   depends_on = [
     "ibm_is_floating_ip.fip1"
   ]
-  group = "${ibm_is_vpc.vpc.default_security_group}"
+  group = "${ibm_is_vpc.vision_vpc.default_security_group}"
   direction = "inbound"
   remote = "0.0.0.0/0"
 
@@ -119,7 +124,7 @@ resource "ibm_is_security_group_rule" "sg2-tcp-rule" {
   depends_on = [
     "ibm_is_floating_ip.fip1"
   ]
-  group = "${ibm_is_vpc.vpc.default_security_group}"
+  group = "${ibm_is_vpc.vision_vpc.default_security_group}"
   direction = "inbound"
   remote = "0.0.0.0/0"
 
@@ -134,7 +139,7 @@ resource "ibm_is_security_group_rule" "sg3-tcp-rule" {
   depends_on = [
     "ibm_is_floating_ip.fip1"
   ]
-  group = "${ibm_is_vpc.vpc.default_security_group}"
+  group = "${ibm_is_vpc.vision_vpc.default_security_group}"
   direction = "inbound"
   remote = "0.0.0.0/0"
 
@@ -144,7 +149,7 @@ resource "ibm_is_security_group_rule" "sg3-tcp-rule" {
   }
 }
 
-resource "ibm_is_instance" "vm" {
+resource "ibm_is_instance" "vision_vm" {
   name = "${var.vpc_basename}-vm1"
   image = "${local.boot_image}" #Ubuntu 18.04 (w/ GPUs)
   profile = "${local.vm_profile}" #128GBVM - change to a GPU VM
@@ -153,7 +158,7 @@ resource "ibm_is_instance" "vm" {
     subnet = "${ibm_is_subnet.subnet.id}"
   }
 
-  vpc = "${ibm_is_vpc.vpc.id}"
+  vpc = "${ibm_is_vpc.vision_vpc.id}"
   zone = "${local.vpc_zone}" //make this a variable when there's more than one option...
   keys = [
     "${ibm_is_ssh_key.public_key.id}"
@@ -179,12 +184,24 @@ resource "tls_private_key" "vision_keypair" {
   rsa_bits = "2048"
 }
 
+data "template_file" "env_template" {
+  template = "${file("${path.module}/env.tpl")}"
+  vars = {
+    cos_access_key        = "${var.cos_access_key}"
+    cos_secret_access_key = "${var.cos_secret_access_key}"
+    cos_bucket_base       = "${var.cos_bucket_base}"
+    vision_deb_name       = "${var.vision_deb_name}"
+    vision_tar_name       = "${var.vision_tar_name}"
+    vision_version        = "${var.vision_version}"
+  }
+}
+
 
 #Provision PowerAI Vision onto the system
 resource "null_resource" "provisioners" {
 
   triggers = {
-    vmid = "${ibm_is_instance.vm.id}"
+    vmid = "${ibm_is_instance.vision_vm.id}"
   }
 
   depends_on = [
@@ -195,6 +212,18 @@ resource "null_resource" "provisioners" {
   provisioner "file" {
     source = "./scripts"
     destination = "/tmp"
+    connection {
+      type = "ssh"
+      user = "root"
+      agent = false
+      host = "${ibm_is_floating_ip.fip1.address}"
+      private_key = "${tls_private_key.vision_keypair.private_key_pem}"
+    }
+  }
+
+  provisioner "file" {
+    content     = "${data.template_file.env_template.rendered}"
+    destination = "/tmp/scripts/env.sh"
     connection {
       type = "ssh"
       user = "root"
