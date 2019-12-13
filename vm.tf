@@ -203,8 +203,8 @@ resource "null_resource" "provisioners" {
     connection {
       type = "ssh"
       user = "root"
-      agent = false
-      timeout = "10m"
+      agent = true
+      timeout = "5m"
       host = "${ibm_is_floating_ip.fip1.address}"
       private_key = "${tls_private_key.vision_keypair.private_key_pem}"
     }
@@ -216,8 +216,8 @@ resource "null_resource" "provisioners" {
     connection {
       type = "ssh"
       user = "root"
-      agent = false
-      timeout = "10m"
+      agent = true
+      timeout = "5m"
       host = "${ibm_is_floating_ip.fip1.address}"
       private_key = "${tls_private_key.vision_keypair.private_key_pem}"
     }
@@ -243,8 +243,8 @@ resource "null_resource" "provisioners" {
     connection {
       type = "ssh"
       user = "root"
-      agent = false
-      timeout = "10m"
+      agent = true
+      timeout = "5m"
       host = "${ibm_is_floating_ip.fip1.address}"
       private_key = "${tls_private_key.vision_keypair.private_key_pem}"
     }
