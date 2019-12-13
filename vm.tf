@@ -173,7 +173,7 @@ resource "tls_private_key" "vision_keypair" {
 }
 
 data "template_file" "env_template" {
-  template = "${file("${path.module}/env.tpl")}"
+  template = "${file("env.tpl")}"
   vars = {
     cos_access_key        = "${var.cos_access_key}"
     cos_secret_access_key = "${var.cos_secret_access_key}"
