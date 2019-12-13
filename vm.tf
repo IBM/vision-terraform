@@ -52,19 +52,7 @@ variable "vision_tar_name" {
 }
 
 //grand plan:
-/*
-  1. switch COS secrets to be variables. See if this works, and if the provisioning system will really hide a variable
-  2. try and create an offering and validate it.
-  3. for some reason validation is failing
-  4. try and simplify the variables and just take it down to 2 variables... 1 hidden with a value (not required) and 1 visible
-*/
-
-//disable configuration for the vpc_zone
-//this is configurable via the locals variable below. note that if the cidr_block doesn't match the zone, things will fail.
-//variable "vpc_zone" {
-//  description = "Which zone should PowerAI Vision be deployed into? Note that the entire application will be deployed into a single zone. Valid options are 'us-south-1' or 'us-south-3' and you may leave the default."
-//  default = "us-south-1"
-//}
+//cannot ssh from schematics to the host... why???
 
 #################################################
 ##               End of variables              ##
@@ -78,14 +66,14 @@ locals {
 }
 
 #Create a VPC for the application
-resource "ibm_is_vpc" "vision_vpc" {
+resource "ibm_is_vpc" "vpc" {
   name = "${var.vpc_basename}-vpc1"
 }
 
 #Create a subnet for the application
 resource "ibm_is_subnet" "subnet" {
   name = "${var.vpc_basename}-subnet1"
-  vpc = "${ibm_is_vpc.vision_vpc.id}"
+  vpc = "${ibm_is_vpc.vpc.id}"
   zone = "${local.vpc_zone}"
   ip_version = "ipv4"
   total_ipv4_address_count = 32
@@ -100,7 +88,7 @@ resource "ibm_is_ssh_key" "public_key" {
 #Create a public floating IP so that the app is available on the Internet
 resource "ibm_is_floating_ip" "fip1" {
   name = "${var.vpc_basename}-subnet-fip1"
-  target = "${ibm_is_instance.vision_vm.primary_network_interface.0.id}"
+  target = "${ibm_is_instance.vm.primary_network_interface.0.id}"
 }
 
 #Enable ssh into the instance for debug
@@ -108,7 +96,7 @@ resource "ibm_is_security_group_rule" "sg1-tcp-rule" {
   depends_on = [
     "ibm_is_floating_ip.fip1"
   ]
-  group = "${ibm_is_vpc.vision_vpc.default_security_group}"
+  group = "${ibm_is_vpc.vpc.default_security_group}"
   direction = "inbound"
   remote = "0.0.0.0/0"
 
@@ -124,7 +112,7 @@ resource "ibm_is_security_group_rule" "sg2-tcp-rule" {
   depends_on = [
     "ibm_is_floating_ip.fip1"
   ]
-  group = "${ibm_is_vpc.vision_vpc.default_security_group}"
+  group = "${ibm_is_vpc.vpc.default_security_group}"
   direction = "inbound"
   remote = "0.0.0.0/0"
 
@@ -139,7 +127,7 @@ resource "ibm_is_security_group_rule" "sg3-tcp-rule" {
   depends_on = [
     "ibm_is_floating_ip.fip1"
   ]
-  group = "${ibm_is_vpc.vision_vpc.default_security_group}"
+  group = "${ibm_is_vpc.vpc.default_security_group}"
   direction = "inbound"
   remote = "0.0.0.0/0"
 
@@ -149,7 +137,7 @@ resource "ibm_is_security_group_rule" "sg3-tcp-rule" {
   }
 }
 
-resource "ibm_is_instance" "vision_vm" {
+resource "ibm_is_instance" "vm" {
   name = "${var.vpc_basename}-vm1"
   image = "${local.boot_image}" #Ubuntu 18.04 (w/ GPUs)
   profile = "${local.vm_profile}" #128GBVM - change to a GPU VM
@@ -158,7 +146,7 @@ resource "ibm_is_instance" "vision_vm" {
     subnet = "${ibm_is_subnet.subnet.id}"
   }
 
-  vpc = "${ibm_is_vpc.vision_vpc.id}"
+  vpc = "${ibm_is_vpc.vpc.id}"
   zone = "${local.vpc_zone}" //make this a variable when there's more than one option...
   keys = [
     "${ibm_is_ssh_key.public_key.id}"
@@ -201,7 +189,7 @@ data "template_file" "env_template" {
 resource "null_resource" "provisioners" {
 
   triggers = {
-    vmid = "${ibm_is_instance.vision_vm.id}"
+    vmid = "${ibm_is_instance.vm.id}"
   }
 
   depends_on = [
