@@ -205,8 +205,7 @@ resource "null_resource" "provisioners" {
       user = "root"
       agent = false
       timeout = "5m"
-      #host = "${ibm_is_floating_ip.fip1.address}"
-      host = "${ibm_is_instance.vm.primary_network_interface.primary_ipv4_address}"
+      host = "${ibm_is_floating_ip.fip1.address}"
       private_key = "${tls_private_key.vision_keypair.private_key_pem}"
     }
   }
@@ -219,7 +218,7 @@ resource "null_resource" "provisioners" {
       user = "root"
       agent = false
       timeout = "5m"
-      host = "${ibm_is_instance.vm.primary_network_interface.primary_ipv4_address}"
+      host = "${ibm_is_floating_ip.fip1.address}"
       private_key = "${tls_private_key.vision_keypair.private_key_pem}"
     }
   }
@@ -246,7 +245,7 @@ resource "null_resource" "provisioners" {
       user = "root"
       agent = false
       timeout = "5m"
-      host = "${ibm_is_instance.vm.primary_network_interface.primary_ipv4_address}"
+      host = "${ibm_is_floating_ip.fip1.address}"
       private_key = "${tls_private_key.vision_keypair.private_key_pem}"
     }
   }
