@@ -56,6 +56,16 @@ variable "boot_image_id" {
   default = "r006-aaf9e2d4-f51d-4a94-be64-4511f78b1986" #Ubuntu 18.04 (w/ GPUs)
 }
 
+variable "vpc_zone" {
+  description = "Target availbility zone to create this instance of PowerAI Vision"
+  default = "us-south-1"
+}
+
+variable "vm_profile" {
+  description = "What resources or VM profile should we create for compute? gp2-24x224x2 provides 2 GPUs and 224GB RAM"
+  default = "gp2-24x224x2"
+}
+
 //grand plan:
 //cannot ssh from schematics to the host... why???
 
@@ -64,10 +74,6 @@ variable "boot_image_id" {
 #################################################
 
 
-locals {
-  vpc_zone = "us-south-1"
-  vm_profile = "gp2-24x224x2" #2 GPU instance with 224GB RAM
-}
 
 #Create a VPC for the application
 resource "ibm_is_vpc" "vpc" {
@@ -78,7 +84,7 @@ resource "ibm_is_vpc" "vpc" {
 resource "ibm_is_subnet" "subnet" {
   name = "${var.vpc_basename}-subnet1"
   vpc = "${ibm_is_vpc.vpc.id}"
-  zone = "${local.vpc_zone}"
+  zone = "${var.vpc_zone}"
   ip_version = "ipv4"
   total_ipv4_address_count = 32
 }
@@ -144,14 +150,14 @@ resource "ibm_is_security_group_rule" "sg3-tcp-rule" {
 resource "ibm_is_instance" "vm" {
   name = "${var.vpc_basename}-vm1"
   image = "${var.boot_image_id}"
-  profile = "${local.vm_profile}" #224GBVM
+  profile = "${var.vm_profile}" #224GBVM
 
   primary_network_interface = {
     subnet = "${ibm_is_subnet.subnet.id}"
   }
 
   vpc = "${ibm_is_vpc.vpc.id}"
-  zone = "${local.vpc_zone}" //make this a variable when there's more than one option...
+  zone = "${var.vpc_zone}" //make this a variable when there's more than one option...
   keys = [
     "${ibm_is_ssh_key.public_key.id}"
   ]
