@@ -51,6 +51,11 @@ variable "vision_tar_name" {
   default = "powerai-vision-images-version.tar"
 }
 
+variable "boot_image_id" {
+  description = "UUID of the base image for the virtual server (should be an Ubuntu 18.04 base)"
+  default = "r006-aaf9e2d4-f51d-4a94-be64-4511f78b1986" #Ubuntu 18.04 (w/ GPUs)
+}
+
 //grand plan:
 //cannot ssh from schematics to the host... why???
 
@@ -60,7 +65,6 @@ variable "vision_tar_name" {
 
 
 locals {
-  boot_image = "r134-7c3562d6-4f7b-45ba-9969-6cf5d5a3fd55" #Ubuntu 18.04 w/GPU support
   vpc_zone = "us-south-1"
   vm_profile = "gp2-24x224x2" #2 GPU instance with 224GB RAM
 }
@@ -139,8 +143,8 @@ resource "ibm_is_security_group_rule" "sg3-tcp-rule" {
 
 resource "ibm_is_instance" "vm" {
   name = "${var.vpc_basename}-vm1"
-  image = "${local.boot_image}" #Ubuntu 18.04 (w/ GPUs)
-  profile = "${local.vm_profile}" #128GBVM - change to a GPU VM
+  image = "${var.boot_image_id}"
+  profile = "${local.vm_profile}" #224GBVM
 
   primary_network_interface = {
     subnet = "${ibm_is_subnet.subnet.id}"
@@ -173,7 +177,7 @@ resource "tls_private_key" "vision_keypair" {
 }
 
 data "template_file" "env_template" {
-  template = "${file("env.tpl")}"
+  template = "${file("${path.module}/env.tpl")}"
   vars = {
     cos_access_key        = "${var.cos_access_key}"
     cos_secret_access_key = "${var.cos_secret_access_key}"
