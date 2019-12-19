@@ -182,29 +182,29 @@ resource "tls_private_key" "vision_keypair" {
   rsa_bits = "2048"
 }
 
-data "template_file" "env_template" {
-  #This is inlined because Cloud Schematics seems to not find and locate the env.tpl file relative to where the
-  #template is executing
-  template =<<ENDENVTEMPL
-#!/bin/bash -xe
-export RAMDISK=/tmp/ramdisk
-export DOCKERMOUNT=/var/lib/docker
-export USERMGTIMAGE=powerai-vision-usermgt:${vision_version}
-export AWS_ACCESS_KEY_ID=${cos_access_key}
-export AWS_SECRET_ACCESS_KEY=${cos_secret_access_key}
-export COS_BUCKET_BASE=${cos_bucket_base}
-export URLPAIVIMAGES="$${COS_BUCKET_BASE}/${vision_tar_name}"
-export URLPAIVDEB="$${COS_BUCKET_BASE}/${vision_deb_name}"
-ENDENVTEMPL
-  vars = {
-    cos_access_key        = "${var.cos_access_key}"
-    cos_secret_access_key = "${var.cos_secret_access_key}"
-    cos_bucket_base       = "${var.cos_bucket_base}"
-    vision_deb_name       = "${var.vision_deb_name}"
-    vision_tar_name       = "${var.vision_tar_name}"
-    vision_version        = "${var.vision_version}"
-  }
-}
+//data "template_file" "env_template" {
+//  #This is inlined because Cloud Schematics seems to not find and locate the env.tpl file relative to where the
+//  #template is executing
+//  template =<<ENDENVTEMPL
+//#!/bin/bash -xe
+//export RAMDISK=/tmp/ramdisk
+//export DOCKERMOUNT=/var/lib/docker
+//export USERMGTIMAGE=powerai-vision-usermgt:$${vision_version}
+//export AWS_ACCESS_KEY_ID=$${cos_access_key}
+//export AWS_SECRET_ACCESS_KEY=$${cos_secret_access_key}
+//export COS_BUCKET_BASE=$${cos_bucket_base}
+//export URLPAIVIMAGES="$$$${COS_BUCKET_BASE}/$${vision_tar_name}"
+//export URLPAIVDEB="$$$${COS_BUCKET_BASE}/$${vision_deb_name}"
+//ENDENVTEMPL
+//  vars = {
+//    cos_access_key        = "${var.cos_access_key}"
+//    cos_secret_access_key = "${var.cos_secret_access_key}"
+//    cos_bucket_base       = "${var.cos_bucket_base}"
+//    vision_deb_name       = "${var.vision_deb_name}"
+//    vision_tar_name       = "${var.vision_tar_name}"
+//    vision_version        = "${var.vision_version}"
+//  }
+//}
 
 
 #Provision PowerAI Vision onto the system
@@ -233,7 +233,17 @@ resource "null_resource" "provisioners" {
   }
 
   provisioner "file" {
-    content     = "${data.template_file.env_template.rendered}"
+    content     =<<ENDENVTEMPL
+#!/bin/bash -xe
+export RAMDISK=/tmp/ramdisk
+export DOCKERMOUNT=/var/lib/docker
+export USERMGTIMAGE=powerai-vision-usermgt:${var.vision_version}
+export AWS_ACCESS_KEY_ID=${var.cos_access_key}
+export AWS_SECRET_ACCESS_KEY=${var.cos_secret_access_key}
+export COS_BUCKET_BASE=${var.cos_bucket_base}
+export URLPAIVIMAGES="$${COS_BUCKET_BASE}/${var.vision_tar_name}"
+export URLPAIVDEB="$${COS_BUCKET_BASE}/${var.vision_deb_name}"
+ENDENVTEMPL
     destination = "/tmp/scripts/env.sh"
     connection {
       type = "ssh"
