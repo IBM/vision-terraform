@@ -218,10 +218,11 @@ resource "null_resource" "provisioners" {
     "ibm_is_security_group_rule.sg1-tcp-rule"
   ]
 
-
-  provisioner "file" {
-    source = "./scripts"
-    destination = "/tmp"
+provisioner "remote-exec" {
+    inline = [
+      "set -e",
+      "mkdir /tmp/scripts"
+    ]
     connection {
       type = "ssh"
       user = "root"
@@ -231,6 +232,33 @@ resource "null_resource" "provisioners" {
       private_key = "${tls_private_key.vision_keypair.private_key_pem}"
     }
   }
+
+  provisioner "file" {
+    source = "scripts/"
+    destination = "/tmp/scripts"
+    connection {
+      type = "ssh"
+      user = "root"
+      agent = false
+      timeout = "5m"
+      host = "${ibm_is_floating_ip.fip1.address}"
+      private_key = "${tls_private_key.vision_keypair.private_key_pem}"
+    }
+  }
+
+//  ##explicitly-move the signing script onto the system
+//  provisioner "file" {
+//    source = "scripts/sign.py"
+//    destination = "/tmp/scripts"
+//    connection {
+//      type = "ssh"
+//      user = "root"
+//      agent = false
+//      timeout = "5m"
+//      host = "${ibm_is_floating_ip.fip1.address}"
+//      private_key = "${tls_private_key.vision_keypair.private_key_pem}"
+//    }
+//  }
 
   provisioner "file" {
     content     =<<ENDENVTEMPL
