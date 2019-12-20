@@ -57,6 +57,11 @@ variable "boot_image_id" {
   #Ubuntu 18.04 (w/ GPUs)
 }
 
+variable "vpc_region" {
+  description = "Target region to create this instance of PowerAI Vision"
+  default = "us-south"
+}
+
 variable "vpc_zone" {
   description = "Target availbility zone to create this instance of PowerAI Vision"
   default = "us-south-1"
