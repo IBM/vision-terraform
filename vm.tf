@@ -225,24 +225,10 @@ resource "null_resource" "provisioners" {
     command = "pwd; find .; git status; git reset HEAD --hard; find ."
   }
 
-  provisioner "remote-exec" {
-    inline = [
-      "set -e",
-      "mkdir /tmp/scripts"
-    ]
-    connection {
-      type = "ssh"
-      user = "root"
-      agent = false
-      timeout = "5m"
-      host = "${ibm_is_floating_ip.fip1.address}"
-      private_key = "${tls_private_key.vision_keypair.private_key_pem}"
-    }
-  }
 
   provisioner "file" {
-    source = "scripts/"
-    destination = "/tmp/scripts"
+    source = "scripts"
+    destination = "/tmp"
     connection {
       type = "ssh"
       user = "root"
