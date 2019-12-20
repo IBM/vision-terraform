@@ -53,7 +53,8 @@ variable "vision_tar_name" {
 
 variable "boot_image_id" {
   description = "UUID of the base image for the virtual server (should be an Ubuntu 18.04 base)"
-  default = "r006-aaf9e2d4-f51d-4a94-be64-4511f78b1986" #Ubuntu 18.04 (w/ GPUs)
+  default = "r006-aaf9e2d4-f51d-4a94-be64-4511f78b1986"
+  #Ubuntu 18.04 (w/ GPUs)
 }
 
 variable "vpc_zone" {
@@ -91,8 +92,8 @@ resource "ibm_is_subnet" "subnet" {
 
 #Create an SSH key which will be used for provisioning by this template, and for debug purposes
 resource "ibm_is_ssh_key" "public_key" {
-    name = "${var.vpc_basename}-public-key"
-    public_key = "${tls_private_key.vision_keypair.public_key_openssh}"
+  name = "${var.vpc_basename}-public-key"
+  public_key = "${tls_private_key.vision_keypair.public_key_openssh}"
 }
 
 #Create a public floating IP so that the app is available on the Internet
@@ -150,14 +151,16 @@ resource "ibm_is_security_group_rule" "sg3-tcp-rule" {
 resource "ibm_is_instance" "vm" {
   name = "${var.vpc_basename}-vm1"
   image = "${var.boot_image_id}"
-  profile = "${var.vm_profile}" #224GBVM
+  profile = "${var.vm_profile}"
+  #224GBVM
 
   primary_network_interface = {
     subnet = "${ibm_is_subnet.subnet.id}"
   }
 
   vpc = "${ibm_is_vpc.vpc.id}"
-  zone = "${var.vpc_zone}" //make this a variable when there's more than one option...
+  zone = "${var.vpc_zone}"
+  //make this a variable when there's more than one option...
   keys = [
     "${ibm_is_ssh_key.public_key.id}"
   ]
@@ -178,7 +181,7 @@ resource "random_password" "vision_password" {
 
 #Create a ssh keypair which will be used to provision code onto the system - and also access the VM for debug if needed.
 resource "tls_private_key" "vision_keypair" {
-  algorithm   = "RSA"
+  algorithm = "RSA"
   rsa_bits = "2048"
 }
 
@@ -218,7 +221,11 @@ resource "null_resource" "provisioners" {
     "ibm_is_security_group_rule.sg1-tcp-rule"
   ]
 
-provisioner "remote-exec" {
+  provisioner "local-exec" {
+    command = "pwd; find ."
+  }
+
+  provisioner "remote-exec" {
     inline = [
       "set -e",
       "mkdir /tmp/scripts"
@@ -246,22 +253,22 @@ provisioner "remote-exec" {
     }
   }
 
-//  ##explicitly-move the signing script onto the system
-//  provisioner "file" {
-//    source = "scripts/sign.py"
-//    destination = "/tmp/scripts"
-//    connection {
-//      type = "ssh"
-//      user = "root"
-//      agent = false
-//      timeout = "5m"
-//      host = "${ibm_is_floating_ip.fip1.address}"
-//      private_key = "${tls_private_key.vision_keypair.private_key_pem}"
-//    }
-//  }
+  //  ##explicitly-move the signing script onto the system
+  //  provisioner "file" {
+  //    source = "scripts/sign.py"
+  //    destination = "/tmp/scripts"
+  //    connection {
+  //      type = "ssh"
+  //      user = "root"
+  //      agent = false
+  //      timeout = "5m"
+  //      host = "${ibm_is_floating_ip.fip1.address}"
+  //      private_key = "${tls_private_key.vision_keypair.private_key_pem}"
+  //    }
+  //  }
 
   provisioner "file" {
-    content     =<<ENDENVTEMPL
+    content = <<ENDENVTEMPL
 #!/bin/bash -xe
 export RAMDISK=/tmp/ramdisk
 export DOCKERMOUNT=/var/lib/docker
