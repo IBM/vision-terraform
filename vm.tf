@@ -227,7 +227,7 @@ resource "null_resource" "provisioners" {
   ]
 
   provisioner "local-exec" {
-    command = "pwd; git reset HEAD --hard"
+    command = "git reset HEAD --hard"
   }
 
 
