@@ -16,5 +16,5 @@ echo "Fetching deb..."
 python3 $BASEDIR/sign.py --url $URLPAIVDEB | xargs time aria2c -q $URLPAIVDEB
 echo "Uninstalling aria2"
 apt-get -o Dpkg::Use-Pty=0 remove -qq aria2
-echo "SUCCESS: Files downloaded successfully!"
+echo "SUCCESS: Installation media downloaded successfully!"
 popd

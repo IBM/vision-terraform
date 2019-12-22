@@ -5,7 +5,7 @@ BASEDIR="$(dirname "$0")"
 source ${BASEDIR}/env.sh
 
 echo "Setting PowerAI Vision password..."
-echo "Waiting for authorization service to start up..."
+echo "Waiting for authorization services to start up..."
 
 RETRYCOUNT=0
 RETRYDELAY=120
