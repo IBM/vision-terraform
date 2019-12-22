@@ -294,6 +294,7 @@ ENDENVTEMPL
       "/tmp/scripts/install_vision.sh",
       "/tmp/scripts/ramdisk_tmp_destroy.sh",
       "/tmp/scripts/patch_gpus.sh ${var.expect_gpus}",
+      "/tmp/scripts/patch_certcreate.sh",
       "/tmp/scripts/vision_start.sh",
       "/tmp/scripts/set_vision_pw.sh ${random_password.vision_password.result}",
       "rm -rf /tmp/scripts"
