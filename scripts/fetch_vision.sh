@@ -5,8 +5,8 @@ BASEDIR="$(dirname "$0")"
 # shellcheck disable=SC1090
 source ${BASEDIR}/env.sh
 echo "Installing aria2..."
-apt-get -qq -o Dpkg::Use-Pty=0 update || echo " RC${?} Got an error on update???"
-apt-get -qq -o Dpkg::Use-Pty=0 -y install aria2
+apt-get update -qq -o Dpkg::Use-Pty=0 || echo " RC${?} Got an error on update???"
+apt-get install -qq -o Dpkg::Use-Pty=0 aria2
 echo "Downloading to ${RAMDISK}..."
 pushd $RAMDISK
 echo "Fetching  image tarball..."
