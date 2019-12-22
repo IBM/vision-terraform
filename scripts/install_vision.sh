@@ -6,6 +6,5 @@ source ${BASEDIR}/env.sh
 dpkg -i ${RAMDISK}/*trial*.deb
 LOGFILE=/opt/powerai-vision/install_vision.log
 echo "INFO: Loading PowerAI Vision Docker images. This will take several minutes..."
-echo "INFO: See ${LOGFILE} if needed"
 time /opt/powerai-vision/bin/load_images.sh -f ${RAMDISK}/powerai-vision-images-*.tar &>${LOGFILE}
 echo "INFO: PowerAI Vision Docker images loaded successfully!"

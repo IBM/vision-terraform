@@ -5,8 +5,8 @@ BASEDIR="$(dirname "$0")"
 # shellcheck disable=SC1090
 source ${BASEDIR}/env.sh
 echo "Installing aria2..."
-apt-get update || echo " RC${?} Got an error on update???"
-apt-get -y install aria2
+apt-get -qq update || echo " RC${?} Got an error on update???"
+apt-get -qq -y install aria2
 echo "Downloading to ${RAMDISK}..."
 pushd $RAMDISK
 echo "Fetching  image tarball..."
@@ -15,6 +15,6 @@ python3 $BASEDIR/sign.py --url $URLPAIVIMAGES | xargs -t aria2c -s160 -x16 $URLP
 echo "Fetching deb"
 python3 $BASEDIR/sign.py --url $URLPAIVDEB | xargs -t aria2c $URLPAIVDEB
 echo "Uninstalling aria2"
-apt-get -y remove aria2
+apt-get -qq -y remove aria2
 echo "SUCCESS: Files downloaded successfully!"
 popd
