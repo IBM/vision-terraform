@@ -1,5 +1,5 @@
 variable "ibmcloud_api_key" {
-    description = "Denotes the IBM Cloud API key to use "
+    description = "Enter your IBM Cloud API Key. To get this key, go to https://cloud.ibm.com/iam/apikeys and generate a new 'IBM Cloud API Key'"
 }
 
 
