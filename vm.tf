@@ -50,10 +50,9 @@ variable "vision_tar_name" {
   default = "powerai-vision-images-version.tar"
 }
 
-variable "boot_image_id" {
-  description = "UUID of the base image for the virtual server (should be an Ubuntu 18.04 base)"
-  default = "r006-aaf9e2d4-f51d-4a94-be64-4511f78b1986"
-  #Ubuntu 18.04 (w/ GPUs)
+variable "boot_image_name" {
+  description = "name of the base image for the virtual server (should be an Ubuntu 18.04 base)"
+  default = "ibm-ubuntu-18-04-3-minimal-ppc64le-2" #Ubuntu 18.04
 }
 
 variable "vpc_region" {
@@ -75,6 +74,9 @@ variable "vm_profile" {
 ##               End of variables              ##
 #################################################
 
+data ibm_is_image "bootimage" {
+    name = "${var.boot_image_name}"
+}
 
 
 #Create a VPC for the application
@@ -151,7 +153,7 @@ resource "ibm_is_security_group_rule" "sg3-tcp-rule" {
 
 resource "ibm_is_instance" "vm" {
   name = "${var.vpc_basename}-vm1"
-  image = "${var.boot_image_id}"
+  image = "${data.ibm_is_image.bootimage.id}"
   profile = "${var.vm_profile}"
   #224GBVM
 
