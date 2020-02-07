@@ -15,7 +15,7 @@
 
 variable "vision_version" {
   description = "V.R.M.F of PowerAI Vision"
-  default = "1.1.5.0"
+  default = "1.1.5.1"
 }
 
 variable "vpc_basename" {
@@ -249,7 +249,6 @@ ENDENVTEMPL
       "/tmp/scripts/install_vision.sh",
       "/tmp/scripts/ramdisk_tmp_destroy.sh",
       "/tmp/scripts/patch_gpus.sh ${var.expect_gpus}",
-      "/tmp/scripts/patch_certcreate.sh",
       "/tmp/scripts/vision_start.sh",
       "/tmp/scripts/set_vision_pw.sh ${random_password.vision_password.result}",
       "rm -rf /tmp/scripts"
