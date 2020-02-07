@@ -13,3 +13,5 @@ More specifically, it creates the following resources:
 * a security group that allows ingress traffic on port 443 (SSL) and on port 22 (for debug)
 
 This instance is not backed up, and will expire 90 days from creation. Export any models or datasets before destroying it, and before it expires.
+
+IMPORTANT: Reboots of the VM are not supported, and will result in loss of data. Back up any datasets or models prior to a reboot or shutdown of underlying VPC infrastructure.
