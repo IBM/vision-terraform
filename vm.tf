@@ -45,7 +45,6 @@ variable "vision_deb_name" {
   default = "powerai-vision_version.deb"
 }
 
-
 variable "vision_tar_name" {
   description = "Install images name (e.g. powerai-vision-1.1.5-images.tar)"
   default = "powerai-vision-images-version.tar"
@@ -161,8 +160,8 @@ resource "ibm_is_instance" "vm" {
   }
 
   vpc = "${ibm_is_vpc.vpc.id}"
-  zone = "${var.vpc_zone}"
-  //make this a variable when there's more than one option...
+  zone = "${var.vpc_zone}" //make this a variable when there's more than one option
+
   keys = [
     "${ibm_is_ssh_key.public_key.id}"
   ]
@@ -187,30 +186,6 @@ resource "tls_private_key" "vision_keypair" {
   rsa_bits = "2048"
 }
 
-//data "template_file" "env_template" {
-//  #This is inlined because Cloud Schematics seems to not find and locate the env.tpl file relative to where the
-//  #template is executing
-//  template =<<ENDENVTEMPL
-//#!/bin/bash -xe
-//export RAMDISK=/tmp/ramdisk
-//export DOCKERMOUNT=/var/lib/docker
-//export USERMGTIMAGE=powerai-vision-usermgt:$${vision_version}
-//export AWS_ACCESS_KEY_ID=$${cos_access_key}
-//export AWS_SECRET_ACCESS_KEY=$${cos_secret_access_key}
-//export COS_BUCKET_BASE=$${cos_bucket_base}
-//export URLPAIVIMAGES="$$$${COS_BUCKET_BASE}/$${vision_tar_name}"
-//export URLPAIVDEB="$$$${COS_BUCKET_BASE}/$${vision_deb_name}"
-//ENDENVTEMPL
-//  vars = {
-//    cos_access_key        = "${var.cos_access_key}"
-//    cos_secret_access_key = "${var.cos_secret_access_key}"
-//    cos_bucket_base       = "${var.cos_bucket_base}"
-//    vision_deb_name       = "${var.vision_deb_name}"
-//    vision_tar_name       = "${var.vision_tar_name}"
-//    vision_version        = "${var.vision_version}"
-//  }
-//}
-
 
 #Provision PowerAI Vision onto the system
 resource "null_resource" "provisioners" {
@@ -222,11 +197,6 @@ resource "null_resource" "provisioners" {
   depends_on = [
     "ibm_is_security_group_rule.sg1-tcp-rule"
   ]
-
-  provisioner "local-exec" {
-    command = "pwd; find .; git status; git reset HEAD --hard; find ."
-  }
-
 
   provisioner "file" {
     source = "scripts"
@@ -241,19 +211,6 @@ resource "null_resource" "provisioners" {
     }
   }
 
-  //  ##explicitly-move the signing script onto the system
-  //  provisioner "file" {
-  //    source = "scripts/sign.py"
-  //    destination = "/tmp/scripts"
-  //    connection {
-  //      type = "ssh"
-  //      user = "root"
-  //      agent = false
-  //      timeout = "5m"
-  //      host = "${ibm_is_floating_ip.fip1.address}"
-  //      private_key = "${tls_private_key.vision_keypair.private_key_pem}"
-  //    }
-  //  }
 
   provisioner "file" {
     content = <<ENDENVTEMPL
