@@ -72,9 +72,6 @@ variable "vm_profile" {
   default = "gp2-24x224x2"
 }
 
-//grand plan:
-//cannot ssh from schematics to the host... why???
-
 #################################################
 ##               End of variables              ##
 #################################################
@@ -181,7 +178,7 @@ resource "ibm_is_instance" "vm" {
 resource "random_password" "vision_password" {
   length = 16
   special = true
-  override_special = "!@#_"
+  override_special = "!@_"
 }
 
 #Create a ssh keypair which will be used to provision code onto the system - and also access the VM for debug if needed.
