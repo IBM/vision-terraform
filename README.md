@@ -1,4 +1,4 @@
-# IBM PowerAI Vision v1.1.5.1 Trial Edition
+# IBM PowerAI Vision v1.1.5.1 Trial Edition Terraform Template
 
 PowerAI Vision makes computer vision with deep learning more accessible to business users. PowerAI Vision includes an intuitive toolset that empowers subject matter experts to label, train, and deploy deep learning vision models, without coding or deep learning expertise. It includes the most popular deep learning frameworks and their dependencies, and it is built for easy and rapid deployment and increased team productivity.
 
