@@ -12,6 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+variable "resource_group" {
+  description = "Resource group under which all the resources are provisioned"
+  default = "default"
+}
 
 variable "vision_version" {
   description = "V.R.M.F of PowerAI Vision"
@@ -69,6 +73,7 @@ variable "vm_profile" {
   description = "What resources or VM profile should we create for compute? gp2-24x224x2 provides 2 GPUs and 224GB RAM"
   default = "gp2-24x224x2"
 }
+
 
 #################################################
 ##               End of variables              ##
