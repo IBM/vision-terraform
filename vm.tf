@@ -28,26 +28,19 @@ variable "expect_gpus" {
   default = "1"
 }
 
-variable "cos_access_key" {
-  description = "AWS Access Key for COS bucket containing install media"
-}
-
-variable "cos_secret_access_key" {
-  description = "AWS Secret Access Key for COS bucket containing install media"
-}
-
 variable "cos_bucket_base" {
   description = "HTTP URL for COS bucket containing install media (e.g. http://region/bucket with no trailing slash)"
+  default = "https://vision-cloud-trial.s3.direct.us-east.cloud-object-storage.appdomain.cloud"
 }
 
 variable "vision_deb_name" {
   description = "Install debian name (e.g. powerai-vision-1.1.5~trial.deb)"
-  default = "powerai-vision_version.deb"
+  default = "powerai-vision_1.1.5.1-494.08411ee~trial_ppc64el.deb"
 }
 
 variable "vision_tar_name" {
   description = "Install images name (e.g. powerai-vision-1.1.5-images.tar)"
-  default = "powerai-vision-images-version.tar"
+  default = "powerai-vision-images-1.1.5.1.tar"
 }
 
 variable "boot_image_name" {
@@ -220,8 +213,6 @@ resource "null_resource" "provisioners" {
 export RAMDISK=/tmp/ramdisk
 export DOCKERMOUNT=/var/lib/docker
 export USERMGTIMAGE=powerai-vision-usermgt:${var.vision_version}
-export AWS_ACCESS_KEY_ID=${var.cos_access_key}
-export AWS_SECRET_ACCESS_KEY=${var.cos_secret_access_key}
 export COS_BUCKET_BASE=${var.cos_bucket_base}
 export URLPAIVIMAGES="$${COS_BUCKET_BASE}/${var.vision_tar_name}"
 export URLPAIVDEB="$${COS_BUCKET_BASE}/${var.vision_deb_name}"
