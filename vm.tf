@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-variable "resource_group" {
-  description = "Resource group under which all the resources are provisioned"
+variable "resource_group_name" {
+  description = "Resource group name under which all the resources will be provisioned"
   default = "default"
 }
 
@@ -83,10 +83,14 @@ data ibm_is_image "bootimage" {
     name = "${var.boot_image_name}"
 }
 
+data "ibm_resource_group" "group" {
+  name = "${var.resource_group_name}"
+}
 
 #Create a VPC for the application
 resource "ibm_is_vpc" "vpc" {
   name = "${var.vpc_basename}-vpc1"
+  resource_group = "${data.ibm_resource_group.group.id}"
 }
 
 #Create a subnet for the application
@@ -94,6 +98,7 @@ resource "ibm_is_subnet" "subnet" {
   name = "${var.vpc_basename}-subnet1"
   vpc = "${ibm_is_vpc.vpc.id}"
   zone = "${var.vpc_zone}"
+  resource_group = "${data.ibm_resource_group.group.id}"
   ip_version = "ipv4"
   total_ipv4_address_count = 32
 }
@@ -160,6 +165,7 @@ resource "ibm_is_instance" "vm" {
   name = "${var.vpc_basename}-vm1"
   image = "${data.ibm_is_image.bootimage.id}"
   profile = "${var.vm_profile}"
+  resource_group = "${data.ibm_resource_group.group.id}"
   #224GBVM
 
   primary_network_interface = {
