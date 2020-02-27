@@ -4,7 +4,7 @@ PowerAI Vision makes computer vision with deep learning more accessible to busin
 
 ## Deployment Architecture
 
-This provisions a dedicated instance of PowerAI Vision Trial Edition in IBM Cloud utilizing IBM Cloud Schematics.
+This provisions a dedicated instance of PowerAI Vision Trial Edition in IBM Cloud utilizing IBM Cloud Schematics or with standalone Terraform.
 
 Once created, its public IP address along with a username and password to log into the application will be displayed for easy access.
 
@@ -20,7 +20,36 @@ This instance is not backed up, and will expire 90 days from creation. Export an
 
 IMPORTANT: Reboots of the VM are not supported, and will result in loss of data. Back up any datasets or models prior to a reboot or shutdown of underlying VPC infrastructure.
 
-NOTE: Please note that provisioning may take approximately fifteen minutes.
+NOTE: Please note that provisioning may take approximately twenty minutes.
+
+
+## Standalone Terraform Deployment Steps
+
+### Prerequisites
+
+To run as a standalone Terraform deployment, you need the following prerequisites.
+
+```
+terraform: v0.11.x
+ibm terraform provider: v0.22.x
+```
+
+Use the [IBM Cloud VPC Terraform Documentation](https://cloud.ibm.com/docs/terraform?topic=terraform-getting-started#install) for information on how to install Terraform and the IBM Terraform Provider.
+
+You also need to have an [IBM Cloud API Key](https://cloud.ibm.com/docs/iam?topic=iam-userapikey).
+
+### Installation Steps
+
+1. Clone this git respository
+2. Review the deployment attributes in the vm.tf file.  You may use the defaults.
+3. Run `terraform apply`
+
+When deployment starts, it will ask you for your API key.  The PowerAI Vision Trial will then take ~20 minutes to launch.
+
+### Destroy
+
+Simply run `terraform destroy` to remove the PowerAI Vision infrastructure.  The solution will also remove the VPC, Subnet, and all other associated resources it created.  It will not touch other infrastructure in your IBM Cloud account.
+
 
 ## Resources
 * Learn more about IBM PowerAI Vision at the [IBM Marketplace](https://www.ibm.com/us-en/marketplace/ibm-powerai-vision).
