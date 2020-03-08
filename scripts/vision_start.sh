@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-IBM_POWERAI_VISION_LICENSE_ACCEPT=yes /opt/powerai-vision/bin/accept-powerai-vision-license.sh
-/opt/powerai-vision/bin/powerai_vision_start.sh
+#TODO: Update before next version
+IBM_POWERAI_VISION_LICENSE_ACCEPT=yes /opt/ibm/vision/bin/accept-visual-insights-license.sh
+/opt/ibm/vision/bin/vision-start.sh
 
