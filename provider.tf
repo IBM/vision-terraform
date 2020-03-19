@@ -25,7 +25,7 @@ variable "ibmcloud_api_key" {
 
 provider "ibm" {
     region           =  "${var.vpc_region}" //this will eventually need to be a selection by the user
-    version          = "~> 1.2"
+    version          = ">= 0.24.4"
     ibmcloud_api_key = "${var.ibmcloud_api_key}"
 }
 
