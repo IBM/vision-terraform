@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 variable "vision_version" {
   description = "V.R.M.F of IBM Visual Insights"
   default = "1.2.0.0"
@@ -57,11 +58,6 @@ variable "vm_profile" {
   default = "gp2-24x224x2"
 }
 
-variable "resource_group_name" {
-  description = "Resource group name under which all the resources will be provisioned"
-  default = "default"
-}
-
 #################################################
 ##               End of variables              ##
 #################################################
@@ -70,14 +66,10 @@ data ibm_is_image "bootimage" {
     name =  "${var.boot_image_name}"
 }
 
-data "ibm_resource_group" "group" {
-  name = "${var.resource_group_name}"
-}
 
 #Create a VPC for the application
 resource "ibm_is_vpc" "vpc" {
   name = "${var.vpc_basename}-vpc1"
-  resource_group = "${data.ibm_resource_group.group.id}"
 }
 
 #Create a subnet for the application
@@ -85,7 +77,6 @@ resource "ibm_is_subnet" "subnet" {
   name = "${var.vpc_basename}-subnet1"
   vpc = "${ibm_is_vpc.vpc.id}"
   zone = "${var.vpc_zone}"
-  resource_group = "${data.ibm_resource_group.group.id}"
   ip_version = "ipv4"
   total_ipv4_address_count = 32
 }
@@ -94,15 +85,12 @@ resource "ibm_is_subnet" "subnet" {
 resource "ibm_is_ssh_key" "public_key" {
   name = "${var.vpc_basename}-public-key"
   public_key = "${tls_private_key.vision_keypair.public_key_openssh}"
-  resource_group = "${data.ibm_resource_group.group.id}"
-
 }
 
 #Create a public floating IP so that the app is available on the Internet
 resource "ibm_is_floating_ip" "fip1" {
   name = "${var.vpc_basename}-subnet-fip1"
   target = "${ibm_is_instance.vm.primary_network_interface.0.id}"
-  resource_group = "${data.ibm_resource_group.group.id}"
 }
 
 #Enable ssh into the instance for debug
@@ -155,7 +143,6 @@ resource "ibm_is_instance" "vm" {
   name = "${var.vpc_basename}-vm1"
   image = "${data.ibm_is_image.bootimage.id}"
   profile = "${var.vm_profile}"
-  resource_group = "${data.ibm_resource_group.group.id}"
 
   primary_network_interface {
     subnet = "${ibm_is_subnet.subnet.id}"
