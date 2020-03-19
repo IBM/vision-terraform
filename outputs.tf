@@ -13,14 +13,17 @@
 # limitations under the License.
 
 
-output "PowerAI Vision UI" {
-    value = "https://${ibm_is_floating_ip.fip1.address}/powerai-vision"
+output "vision_url" {
+  value = "https://${ibm_is_floating_ip.fip1.address}/visual-insights"
+  description = "IBM Visual Insights URL"
 }
 
-output "PowerAI Vision 'admin' password" {
+output "vision_password" {
   value = "${random_password.vision_password.result}"
+  description = "IBM Visual Insights 'admin' password"
 }
 
-output "Instance Private Key (for debug purposes)" {
+output "vision_debug_key" {
   value = "\n${tls_private_key.vision_keypair.private_key_pem}"
+  description = "Instance Private Key (for debug purposes only)"
 }

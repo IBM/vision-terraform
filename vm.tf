@@ -14,18 +14,13 @@
 
 
 variable "vision_version" {
-  description = "V.R.M.F of PowerAI Vision"
-  default = "1.1.5.1"
+  description = "V.R.M.F of IBM Visual Insights"
+  default = "1.2.0.0"
 }
 
 variable "vpc_basename" {
-  description = "Denotes the name of the VPC that PowerAI Vision will be deployed into. Resources associated with PowerAI Vision will be prepended with this name."
-  default = "powerai-vision-trial"
-}
-
-variable "expect_gpus" {
-  description = "Should the provisioning code expect to find GPU capability? 0 - GPUs disabled; 1 - GPUs enabled and expected to be present"
-  default = "1"
+  description = "Denotes the name of the VPC that IBM Visual Insights will be deployed into. Resources associated with IBM Visual Insights will be prepended with this name."
+  default = "ibm-visual-insights-trial"
 }
 
 variable "cos_bucket_base" {
@@ -34,13 +29,13 @@ variable "cos_bucket_base" {
 }
 
 variable "vision_deb_name" {
-  description = "Install debian name (e.g. powerai-vision-1.1.5~trial.deb)"
-  default = "powerai-vision_1.1.5.1-494.08411ee~trial_ppc64el.deb"
+  description = "Install debian name (e.g. visual-insights_1.x.y.deb )"
+  default = "visual-insights_1.2.0.0-508.bfb5f12~trial_ppc64el.deb"
 }
 
 variable "vision_tar_name" {
-  description = "Install images name (e.g. powerai-vision-1.1.5-images.tar)"
-  default = "powerai-vision-images-1.1.5.1.tar"
+  description = "Install images name (e.g. visual-insights-images-1.x.y.0.tar)"
+  default = "visual-insights-images-1.2.0.0.tar"
 }
 
 variable "boot_image_name" {
@@ -49,12 +44,12 @@ variable "boot_image_name" {
 }
 
 variable "vpc_region" {
-  description = "Target region to create this instance of PowerAI Vision"
+  description = "Target region to create this instance of IBM Visual Insights"
   default = "us-south"
 }
 
 variable "vpc_zone" {
-  description = "Target availbility zone to create this instance of PowerAI Vision"
+  description = "Target availbility zone to create this instance of IBM Visual Insights"
   default = "us-south-1"
 }
 
@@ -68,7 +63,7 @@ variable "vm_profile" {
 #################################################
 
 data ibm_is_image "bootimage" {
-    name = "${var.boot_image_name}"
+    name =  "${var.boot_image_name}"
 }
 
 
@@ -108,7 +103,7 @@ resource "ibm_is_security_group_rule" "sg1-tcp-rule" {
   remote = "0.0.0.0/0"
 
 
-  tcp = {
+  tcp {
     port_min = 22
     port_max = 22
   }
@@ -123,7 +118,7 @@ resource "ibm_is_security_group_rule" "sg2-tcp-rule" {
   direction = "inbound"
   remote = "0.0.0.0/0"
 
-  tcp = {
+  tcp {
     port_min = 443
     port_max = 443
   }
@@ -138,7 +133,7 @@ resource "ibm_is_security_group_rule" "sg3-tcp-rule" {
   direction = "inbound"
   remote = "0.0.0.0/0"
 
-  tcp = {
+  tcp {
     port_min = 80
     port_max = 80
   }
@@ -148,9 +143,8 @@ resource "ibm_is_instance" "vm" {
   name = "${var.vpc_basename}-vm1"
   image = "${data.ibm_is_image.bootimage.id}"
   profile = "${var.vm_profile}"
-  #224GBVM
 
-  primary_network_interface = {
+  primary_network_interface {
     subnet = "${ibm_is_subnet.subnet.id}"
   }
 
@@ -168,7 +162,7 @@ resource "ibm_is_instance" "vm" {
 
 }
 
-#Create a login password which will be used for the main PowerAI Vision application
+#Create a login password which will be used for the main IBM Visual Insights application
 resource "random_password" "vision_password" {
   length = 16
   special = true
@@ -182,7 +176,7 @@ resource "tls_private_key" "vision_keypair" {
 }
 
 
-#Provision PowerAI Vision onto the system
+#Provision the app onto the system
 resource "null_resource" "provisioners" {
 
   triggers = {
@@ -212,7 +206,7 @@ resource "null_resource" "provisioners" {
 #!/bin/bash -xe
 export RAMDISK=/tmp/ramdisk
 export DOCKERMOUNT=/var/lib/docker
-export USERMGTIMAGE=powerai-vision-usermgt:${var.vision_version}
+export USERMGTIMAGE=vision-usermgt:${var.vision_version}
 export COS_BUCKET_BASE=${var.cos_bucket_base}
 export URLPAIVIMAGES="$${COS_BUCKET_BASE}/${var.vision_tar_name}"
 export URLPAIVDEB="$${COS_BUCKET_BASE}/${var.vision_deb_name}"
@@ -241,7 +235,6 @@ ENDENVTEMPL
       "/tmp/scripts/install_nvidiadocker2.sh",
       "/tmp/scripts/install_vision.sh",
       "/tmp/scripts/ramdisk_tmp_destroy.sh",
-      "/tmp/scripts/patch_gpus.sh ${var.expect_gpus}",
       "/tmp/scripts/vision_start.sh",
       "/tmp/scripts/set_vision_pw.sh ${random_password.vision_password.result}",
       "rm -rf /tmp/scripts"
