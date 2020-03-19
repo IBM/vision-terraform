@@ -34,7 +34,7 @@ variable "vision_deb_name" {
 }
 
 variable "vision_tar_name" {
-  description = "Install images name (e.g. visual-insights-1.x.y-images.tar)"
+  description = "Install images name (e.g. visual-insights-images-1.x.y.0.tar)"
   default = "visual-insights-images-1.2.0.0.tar"
 }
 
