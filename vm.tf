@@ -234,6 +234,7 @@ ENDENVTEMPL
       "/tmp/scripts/install_docker.sh",
       "/tmp/scripts/install_nvidiadocker2.sh",
       "/tmp/scripts/install_vision.sh",
+      "/tmp/scripts/patch_postinstall.sh",
       "/tmp/scripts/ramdisk_tmp_destroy.sh",
       "/tmp/scripts/vision_start.sh",
       "/tmp/scripts/set_vision_pw.sh ${random_password.vision_password.result}",
