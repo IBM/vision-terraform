@@ -46,5 +46,5 @@ docker load -i $PATCH1FILE
 
 echo "Uninstalling aria2"
 apt-get -o Dpkg::Use-Pty=0 remove -qq aria2
-echo "SUCCESS: Installation media downloaded successfully!"
+echo "SUCCESS: Patches applied successfully!"
 popd
