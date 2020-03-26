@@ -3,7 +3,7 @@
 IBM Visual Insights makes computer vision with deep learning more accessible to business users. IBM Visual Insights includes an intuitive toolset that empowers subject matter experts to label, train, and deploy deep learning vision models, without coding or deep learning expertise. It includes the most popular deep learning frameworks and their dependencies, and it is built for easy and rapid deployment and increased team productivity.
 
 ## License Agreement
-By deploying this terraform template via IBM Cloud Schematics or via Terraform, you accept the Terms and Conditions of the [IBM License Agreement for Evaluation of Programs](https://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-AMDS-BCSSAN).  If you do not agree to these terms, do not deploy this template.
+By deploying this terraform template via IBM Cloud Schematics or via Terraform, you accept the Terms and Conditions of the [IBM License Agreement for Evaluation of Programs](https://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-CKIE-BL45W3).  If you do not agree to these terms, do not deploy this template.
 
 ## Deployment Architecture
 
@@ -33,8 +33,8 @@ NOTE: Please note that provisioning may take approximately twenty minutes.
 To run as a standalone Terraform deployment, you need the following prerequisites.
 
 ```
-terraform: v0.11.x
-ibm terraform provider: v0.22.x
+terraform: v0.11.x or better
+ibm terraform provider: v0.22.x or better
 ```
 
 Use the [IBM Cloud VPC Terraform Documentation](https://cloud.ibm.com/docs/terraform?topic=terraform-getting-started#install) for information on how to install Terraform and the IBM Terraform Provider.
