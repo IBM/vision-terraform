@@ -12,13 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-variable "ibmcloud_api_key" {
-    description = "Enter your IBM Cloud API Key. To get this key, go to https://cloud.ibm.com/iam/apikeys and generate a new 'IBM Cloud API Key'"
-}
-
-
-
 #################################################
 ##               End of variables              ##
 #################################################
@@ -26,7 +19,6 @@ variable "ibmcloud_api_key" {
 provider "ibm" {
     region           =  "${var.vpc_region}"
     version          = ">= 0.24.4"
-    ibmcloud_api_key = "${var.ibmcloud_api_key}"
 }
 
 provider "null" {
