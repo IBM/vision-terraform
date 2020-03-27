@@ -33,8 +33,8 @@ NOTE: Please note that provisioning may take approximately twenty minutes.
 To run as a standalone Terraform deployment, you need the following prerequisites.
 
 ```
-terraform: v0.11.x or better
-ibm terraform provider: v0.22.x or better
+terraform: v0.11.x or greater
+ibm terraform provider: v0.24.x or greater
 ```
 
 Use the [IBM Cloud VPC Terraform Documentation](https://cloud.ibm.com/docs/terraform?topic=terraform-getting-started#install) for information on how to install Terraform and the IBM Terraform Provider.
