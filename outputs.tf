@@ -19,17 +19,17 @@ output "vision_url" {
 }
 
 output "vision_username" {
-  value = "admin"
-  description = "IBM Visual Insights username to login"
+  value = "admin" # The admin always exists on first startup for trial editions of the application, so we hard-code it here for convenience of the user.
+  description = "IBM Visual Insights username"
 }
 output "vision_password" {
   value = "${random_password.vision_password.result}"
-  description = "IBM Visual Insights 'admin' password"
+  description = "IBM Visual Insights password"
 }
 
 output "vpc_id" {
   value = "${ibm_is_vpc.vpc.id}"
-  description = "VPC ID to be used with frontend application"
+  description = "ID of the VPC created for this application"
 }
 
 output "vision_debug_key" {
