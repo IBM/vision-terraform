@@ -18,9 +18,18 @@ output "vision_url" {
   description = "IBM Visual Insights URL"
 }
 
+output "vision_username" {
+  value = "admin"
+  description = "IBM Visual Insights username to login"
+}
 output "vision_password" {
   value = "${random_password.vision_password.result}"
   description = "IBM Visual Insights 'admin' password"
+}
+
+output "vpc_id" {
+  value = "${ibm_is_vpc.vpc.id}"
+  description = "VPC ID to be used with frontend application"
 }
 
 output "vision_debug_key" {
