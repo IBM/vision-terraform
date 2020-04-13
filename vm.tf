@@ -246,7 +246,6 @@ ENDENVTEMPL
       "/tmp/scripts/vision_start.sh",
       "/tmp/scripts/set_vision_pw.sh ${random_password.vision_password.result}",
       "/tmp/scripts/import_dataset.sh ${ibm_is_floating_ip.fip1.address} ${random_password.vision_password.result}",
-
       "rm -rf /tmp/scripts"
     ]
     connection {
