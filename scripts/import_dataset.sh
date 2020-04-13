@@ -45,7 +45,7 @@ export VAPI_HOST="${powerai_ip}"
 
 # Try getting token to use CLI
 n=0
-until [[ $n -ge 10 ]]
+until [[ $n -ge 5 ]]
 do
    VAPI_TOKEN=$(vision users token --user admin --password ${password}) && break  # substitute your command here
    n=$[$n+1]
