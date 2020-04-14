@@ -47,7 +47,7 @@ export VAPI_HOST="${powerai_ip}"
 n=0
 until [[ $n -ge 5 ]]
 do
-   VAPI_TOKEN=$(vision users token --user admin --password ${password}) && break  # substitute your command here
+   VAPI_TOKEN=$(vision users token --user admin --password ${password}) && break
    n=$[$n+1]
    sleep 10
 done
