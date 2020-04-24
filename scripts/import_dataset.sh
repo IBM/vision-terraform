@@ -16,20 +16,13 @@
 BASEDIR="$(dirname "$0")"
 source ${BASEDIR}/env.sh
 
-# Install aria and get example dataset zip file
-echo "Installing aria2..."
-apt-get -o Dpkg::Use-Pty=0 update -qq  || echo " RC${?} Got an error on update???"
-apt-get -o Dpkg::Use-Pty=0 install -qq aria2
+mkdir /tmp/load_dataset
+cd /tmp/load_dataset
 
-cd $HOME
 echo "Fetching example dataset from ${URLPAIVDATASET}"
-aria2c -q $URLPAIVDATASET
+wget -q -O Dataset.zip $URLPAIVDATASET
 
-# Uninstall aria2
-echo "Uninstalling aria2"
-apt-get -o Dpkg::Use-Pty=0 remove -qq aria2
-
-echo "SUCCESS: Downloaded ${DATASET_NAME} example data set successfully."
+echo "SUCCESS: Downloaded example data set successfully."
 
 git clone https://github.com/IBM/vision-tools.git
 
@@ -37,8 +30,8 @@ powerai_ip=$1
 password=$2
 
 # Set env variables to be able to use
-export PYTHONPATH=$PYTHONPATH:$HOME/vision-tools/lib
-PATH=$PATH:$HOME/vision-tools/cli
+export PYTHONPATH=$PYTHONPATH:/tmp/load_dataset/vision-tools/lib
+PATH=$PATH:/tmp/load_dataset/vision-tools/cli
 
 # Set VAPI_HOST to floating IP for UI
 export VAPI_HOST="${powerai_ip}"
@@ -64,7 +57,7 @@ echo "Attempting to import data set...."
 
 
 # Import Bowls_and_Plates.zip data set
-vision datasets import $HOME/${DATASET_NAME}
+vision datasets import /tmp/load_dataset/Dataset.zip
 exit_code=$?
 
 if [[ $exit_code -ne 0 ]]; then
@@ -73,4 +66,8 @@ if [[ $exit_code -ne 0 ]]; then
 else
     echo "Import of example data set was successful."
 fi
+
+# Clean up
+echo "Cleaning up files..."
+rm -fr /tmp/load_dataset
 

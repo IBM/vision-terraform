@@ -38,9 +38,9 @@ variable "vision_tar_name" {
   default = "visual-insights-images-1.2.0.0.tar"
 }
 
-variable "example_dataset_name" {
-  description = "Name of example dataset to automatically import into Visual Insights."
-  default = "Bowls-and-Plates.zip"
+variable "example_dataset_url" {
+  description = "URL of example dataset to automatically import into Visual Insights."
+  default = "https://vision-cloud-trial.s3.direct.us-east.cloud-object-storage.appdomain.cloud/Bowls-and-Plates.zip"
 }
 
 variable "boot_image_name" {
@@ -215,8 +215,7 @@ export USERMGTIMAGE=vision-usermgt:${var.vision_version}
 export COS_BUCKET_BASE=${var.cos_bucket_base}
 export URLPAIVIMAGES="$${COS_BUCKET_BASE}/${var.vision_tar_name}"
 export URLPAIVDEB="$${COS_BUCKET_BASE}/${var.vision_deb_name}"
-export URLPAIVDATASET="$${COS_BUCKET_BASE}/${var.example_dataset_name}"
-export DATASET_NAME="${var.example_dataset_name}"
+export URLPAIVDATASET="${var.example_dataset_url}"
 ENDENVTEMPL
     destination = "/tmp/scripts/env.sh"
     connection {
