@@ -16,9 +16,11 @@
 BASEDIR="$(dirname "$0")"
 source ${BASEDIR}/env.sh
 
+# Create directory in /tmp to put everything in
 mkdir /tmp/load_dataset
 cd /tmp/load_dataset
 
+# Download example dataset
 echo "Fetching example dataset from ${URLPAIVDATASET}"
 wget -q -O Dataset.zip $URLPAIVDATASET
 
@@ -56,7 +58,7 @@ fi
 echo "Attempting to import data set...."
 
 
-# Import Bowls_and_Plates.zip data set
+# Import example data set
 vision datasets import /tmp/load_dataset/Dataset.zip
 exit_code=$?
 
