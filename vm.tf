@@ -180,7 +180,7 @@ resource "null_resource" "provisioners" {
       type        = "ssh"
       user        = "root"
       agent       = false
-      timeout     = "5m"
+      timeout     = "10m"
       host        = ibm_is_floating_ip.fip1.address
       private_key = tls_private_key.vision_keypair.private_key_pem
     }
@@ -203,7 +203,7 @@ ENDENVTEMPL
       type        = "ssh"
       user        = "root"
       agent       = false
-      timeout     = "5m"
+      timeout     = "10m"
       host        = ibm_is_floating_ip.fip1.address
       private_key = tls_private_key.vision_keypair.private_key_pem
     }
@@ -231,7 +231,7 @@ ENDENVTEMPL
       type        = "ssh"
       user        = "root"
       agent       = false
-      timeout     = "5m"
+      timeout     = "10m"
       host        = ibm_is_floating_ip.fip1.address
       private_key = tls_private_key.vision_keypair.private_key_pem
     }
