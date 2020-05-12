@@ -37,6 +37,11 @@ variable "vision_tar_name" {
   default     = "visual-insights-images-1.2.0.0.tar"
 }
 
+variable "example_dataset_url" {
+  description = "URL of example dataset to automatically import into Visual Insights."
+  default = "https://vision-cloud-trial.s3.direct.us-east.cloud-object-storage.appdomain.cloud/Bowls-and-Plates.zip"
+}
+
 variable "boot_image_name" {
   description = "name of the base image for the virtual server (should be an Ubuntu 18.04 base)"
   default     = "ibm-ubuntu-18-04-3-minimal-ppc64le-2"
@@ -195,6 +200,7 @@ export USERMGTIMAGE=vision-usermgt:${var.vision_version}
 export COS_BUCKET_BASE=${var.cos_bucket_base}
 export URLPAIVIMAGES="$${COS_BUCKET_BASE}/${var.vision_tar_name}"
 export URLPAIVDEB="$${COS_BUCKET_BASE}/${var.vision_deb_name}"
+export URLPAIVDATASET="${var.example_dataset_url}"
 ENDENVTEMPL
 
 
@@ -225,7 +231,8 @@ ENDENVTEMPL
       "/tmp/scripts/ramdisk_tmp_destroy.sh",
       "/tmp/scripts/vision_start.sh",
       "/tmp/scripts/set_vision_pw.sh ${random_password.vision_password.result}",
-      "rm -rf /tmp/scripts",
+      "/tmp/scripts/import_dataset.sh ${ibm_is_floating_ip.fip1.address} ${random_password.vision_password.result}",
+      "rm -rf /tmp/scripts"
     ]
     connection {
       type        = "ssh"
