@@ -14,7 +14,7 @@
 
 
 output "vision_url" {
-  value = "https://${ibm_is_floating_ip.fip1.address}/visual-insights"
+  value = "https://${ibm_compute_vm_instance.vm.ipv4_address}/visual-insights"
   description = "IBM Visual Insights URL"
 }
 
@@ -27,10 +27,10 @@ output "vision_password" {
   description = "IBM Visual Insights password"
 }
 
-output "vpc_id" {
-  value = "${ibm_is_vpc.vpc.id}"
-  description = "ID of the VPC created for this application"
-}
+//output "vpc_id" { #?
+//  value = "${ibm_is_vpc.vpc.id}"
+//  description = "ID of the VPC created for this application"
+//}
 
 output "vision_debug_key" {
   value = "\n${tls_private_key.vision_keypair.private_key_pem}"

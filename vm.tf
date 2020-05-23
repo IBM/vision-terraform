@@ -18,7 +18,7 @@ variable "vision_version" {
   default = "1.2.0.0"
 }
 
-variable "vpc_basename" {
+variable "vm_basename" {
   description = "Denotes the name of the VPC that IBM Visual Insights will be deployed into. Resources associated with IBM Visual Insights will be prepended with this name. Keep this at 25 characters or fewer."
   default = "ibm-visual-insights-trial"
 }
@@ -48,123 +48,101 @@ variable "boot_image_name" {
   default = "ibm-ubuntu-18-04-3-minimal-ppc64le-2"
 }
 
-variable "vpc_region" {
-  description = "Target region to create this instance of IBM Visual Insights. Valid values are 'us-south' only at this time."
-  default = "us-south"
-}
-
-variable "vpc_zone" {
-  description = "Target availbility zone to create this instance of IBM Visual Insights. Valid values are 'us-south-1' 'us-south-2' or 'us-south-3' at this time."
-  default = "us-south-2"
+variable "datacenter" {
+  description = "Target datacenter for the VM. Valid values are dal10, dal12, wdc07, fra02, lon04, tok02, or syd04. See https://cloud.ibm.com/docs/virtual-servers?topic=virtual-servers-about-virtual-server-profiles#gpu for more information. "
+  default = "dal10"
 }
 
 variable "vm_profile" {
-  description = "What resources or VM profile should we create for compute? 'gp2-24x224x2' provides 2 GPUs, and 'gp2-32x256x4' provides 4 GPUs. Valid values must be POWER9 GPU profiles from https://cloud.ibm.com/docs/vpc?topic=vpc-profiles#gpu ."
-  default = "gp2-24x224x2"
+  description = "What resources or VM profile should we create for compute? 'AC2_16X120X100' provides 2 V100 GPUs and SAN Storage, 'ACL2_16X120X100' provides 2 V100 GPUs and local storage. Valid values must be an x86 VM with V100 or P100 GPUs from https://cloud.ibm.com/docs/virtual-servers?topic=virtual-servers-about-virtual-server-profiles#gpu."
+  default = "AC2_16X120X100"
 }
 
 #################################################
 ##               End of variables              ##
 #################################################
 
-data ibm_is_image "bootimage" {
-    name =  "${var.boot_image_name}"
-}
-
-
-#Create a VPC for the application
-resource "ibm_is_vpc" "vpc" {
-  name = "${var.vpc_basename}-vpc1"
-}
-
-#Create a subnet for the application
-resource "ibm_is_subnet" "subnet" {
-  name = "${var.vpc_basename}-subnet1"
-  vpc = "${ibm_is_vpc.vpc.id}"
-  zone = "${var.vpc_zone}"
-  ip_version = "ipv4"
-  total_ipv4_address_count = 32
-}
+#Create a subnet for the application -?
+//resource "ibm_is_subnet" "subnet" {
+//  name = "${var.vm_basename}-subnet1"
+//  vpc = "${ibm_is_vpc.vpc.id}"
+//  zone = "${var.vpc_zone}"
+//  ip_version = "ipv4"
+//  total_ipv4_address_count = 32
+//}
 
 #Create an SSH key which will be used for provisioning by this template, and for debug purposes
-resource "ibm_is_ssh_key" "public_key" {
-  name = "${var.vpc_basename}-public-key"
+resource "ibm_compute_ssh_key" "public_key" {
+  label = "${var.vm_basename}-public-key"
   public_key = "${tls_private_key.vision_keypair.public_key_openssh}"
 }
 
-#Create a public floating IP so that the app is available on the Internet
-resource "ibm_is_floating_ip" "fip1" {
-  name = "${var.vpc_basename}-subnet-fip1"
-  target = "${ibm_is_instance.vm.primary_network_interface.0.id}"
-}
+//#Create a public floating IP so that the app is available on the Internet -?
+//resource "ibm_is_floating_ip" "fip1" {
+//  name = "${var.vm_basename}-subnet-fip1"
+//  target = "${ibm_is_instance.vm.primary_network_interface.0.id}"
+//}
 
-#Enable ssh into the instance for debug
-resource "ibm_is_security_group_rule" "sg1-tcp-rule" {
-  depends_on = [
-    "ibm_is_floating_ip.fip1"
+//#Enable ssh into the instance for debug
+//resource "ibm_is_security_group_rule" "sg1-tcp-rule" {
+//  depends_on = [
+//    "ibm_is_floating_ip.fip1"
+//  ]
+//  group = "${ibm_is_vpc.vpc.default_security_group}"
+//  direction = "inbound"
+//  remote = "0.0.0.0/0"
+//
+//
+//  tcp {
+//    port_min = 22
+//    port_max = 22
+//  }
+//}
+
+//#Enable port 443 - main application port
+//resource "ibm_is_security_group_rule" "sg2-tcp-rule" {
+//  depends_on = [
+//    "ibm_is_floating_ip.fip1"
+//  ]
+//  group = "${ibm_is_vpc.vpc.default_security_group}"
+//  direction = "inbound"
+//  remote = "0.0.0.0/0"
+//
+//  tcp {
+//    port_min = 443
+//    port_max = 443
+//  }
+//}
+
+//#Enable port 80 - only use to redirect to port 443
+//resource "ibm_is_security_group_rule" "sg3-tcp-rule" {
+//  depends_on = [
+//    "ibm_is_floating_ip.fip1"
+//  ]
+//  group = "${ibm_is_vpc.vpc.default_security_group}"
+//  direction = "inbound"
+//  remote = "0.0.0.0/0"
+//
+//  tcp {
+//    port_min = 80
+//    port_max = 80
+//  }
+//}
+resource "ibm_compute_vm_instance" "vm" {
+  hostname             = "${var.vm_basename}-vm1"
+  domain               = "vision-terraform.ibmcloudterraform.ibm.com"
+  os_reference_code    = "UBUNTU_18_64"
+  datacenter           = "${var.datacenter}"
+  network_speed        = 1000
+  hourly_billing       = true
+  local_disk           = false
+  private_network_only = false
+  flavor_key_name      = "AC2_16X120X100"
+  disks                = [500] #create a 500GB scratch volume
+  dedicated_acct_host_only = false #required to be false per https://cloud.ibm.com/docs/terraform?topic=terraform-infrastructure-resources#vm
+  ssh_key_ids          = [
+    "${ibm_compute_ssh_key.public_key.id}"
   ]
-  group = "${ibm_is_vpc.vpc.default_security_group}"
-  direction = "inbound"
-  remote = "0.0.0.0/0"
-
-
-  tcp {
-    port_min = 22
-    port_max = 22
-  }
-}
-
-#Enable port 443 - main application port
-resource "ibm_is_security_group_rule" "sg2-tcp-rule" {
-  depends_on = [
-    "ibm_is_floating_ip.fip1"
-  ]
-  group = "${ibm_is_vpc.vpc.default_security_group}"
-  direction = "inbound"
-  remote = "0.0.0.0/0"
-
-  tcp {
-    port_min = 443
-    port_max = 443
-  }
-}
-
-#Enable port 80 - only use to redirect to port 443
-resource "ibm_is_security_group_rule" "sg3-tcp-rule" {
-  depends_on = [
-    "ibm_is_floating_ip.fip1"
-  ]
-  group = "${ibm_is_vpc.vpc.default_security_group}"
-  direction = "inbound"
-  remote = "0.0.0.0/0"
-
-  tcp {
-    port_min = 80
-    port_max = 80
-  }
-}
-
-resource "ibm_is_instance" "vm" {
-  name = "${var.vpc_basename}-vm1"
-  image = "${data.ibm_is_image.bootimage.id}"
-  profile = "${var.vm_profile}"
-
-  primary_network_interface {
-    subnet = "${ibm_is_subnet.subnet.id}"
-  }
-
-  vpc = "${ibm_is_vpc.vpc.id}"
-  zone = "${var.vpc_zone}" //make this a variable when there's more than one option
-
-  keys = [
-    "${ibm_is_ssh_key.public_key.id}"
-  ]
-
-  timeouts {
-    create = "10m"
-    delete = "10m"
-  }
-
 }
 
 #Create a login password which will be used for the main IBM Visual Insights application
@@ -185,12 +163,12 @@ resource "tls_private_key" "vision_keypair" {
 resource "null_resource" "provisioners" {
 
   triggers = {
-    vmid = "${ibm_is_instance.vm.id}"
+    vmid = "${ibm_compute_vm_instance.vm.id}"
   }
 
-  depends_on = [
-    "ibm_is_security_group_rule.sg1-tcp-rule"
-  ]
+//  depends_on = [
+//    "ibm_is_security_group_rule.sg1-tcp-rule"
+//  ]
 
   provisioner "file" {
     source = "scripts"
@@ -200,7 +178,7 @@ resource "null_resource" "provisioners" {
       user = "root"
       agent = false
       timeout = "5m"
-      host = "${ibm_is_floating_ip.fip1.address}"
+      host = "${ibm_compute_vm_instance.vm.ipv4_address}"
       private_key = "${tls_private_key.vision_keypair.private_key_pem}"
     }
   }
@@ -223,7 +201,7 @@ ENDENVTEMPL
       user = "root"
       agent = false
       timeout = "5m"
-      host = "${ibm_is_floating_ip.fip1.address}"
+      host = "${ibm_compute_vm_instance.vm.ipv4_address}"
       private_key = "${tls_private_key.vision_keypair.private_key_pem}"
     }
   }
@@ -244,7 +222,7 @@ ENDENVTEMPL
       "/tmp/scripts/ramdisk_tmp_destroy.sh",
       "/tmp/scripts/vision_start.sh",
       "/tmp/scripts/set_vision_pw.sh ${random_password.vision_password.result}",
-      "/tmp/scripts/import_dataset.sh ${ibm_is_floating_ip.fip1.address} ${random_password.vision_password.result}",
+      "/tmp/scripts/import_dataset.sh ${ibm_compute_vm_instance.vm.ipv4_address} ${random_password.vision_password.result}",
       "rm -rf /tmp/scripts"
     ]
     connection {
@@ -252,7 +230,7 @@ ENDENVTEMPL
       user = "root"
       agent = false
       timeout = "5m"
-      host = "${ibm_is_floating_ip.fip1.address}"
+      host = "${ibm_compute_vm_instance.vm.ipv4_address}"
       private_key = "${tls_private_key.vision_keypair.private_key_pem}"
     }
   }
