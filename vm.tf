@@ -30,12 +30,12 @@ variable "cos_bucket_base" {
 
 variable "vision_deb_name" {
   description = "Install debian name (e.g. visual-insights_1.x.y.deb )"
-  default = "visual-insights_1.2.0.0-508.bfb5f12~trial_ppc64el.deb"
+  default = "visual-insights_1.2.0.0-509.a7da3bf~trial_amd64.deb"
 }
 
 variable "vision_tar_name" {
-  description = "Install images name (e.g. visual-insights-images-1.x.y.0.tar)"
-  default = "visual-insights-images-1.2.0.0.tar"
+  description = "Install images name (e.g. visual-insights-images-arch-1.x.y.0.tar)"
+  default = "visual-insights-images-x86-1.2.0.0.tar"
 }
 
 variable "example_dataset_url" {
@@ -218,11 +218,11 @@ ENDENVTEMPL
       "/tmp/scripts/install_docker.sh",
       "/tmp/scripts/install_nvidiadocker2.sh",
       "/tmp/scripts/install_vision.sh",
-#      "/tmp/scripts/ramdisk_tmp_destroy.sh",
-#      "/tmp/scripts/vision_start.sh",
-#      "/tmp/scripts/set_vision_pw.sh ${random_password.vision_password.result}",
-#      "/tmp/scripts/import_dataset.sh ${ibm_compute_vm_instance.vm.ipv4_address} ${random_password.vision_password.result}",
-#      "rm -rf /tmp/scripts"
+      "/tmp/scripts/ramdisk_tmp_destroy.sh",
+      "/tmp/scripts/vision_start.sh",
+      "/tmp/scripts/set_vision_pw.sh ${random_password.vision_password.result}",
+      "/tmp/scripts/import_dataset.sh ${ibm_compute_vm_instance.vm.ipv4_address} ${random_password.vision_password.result}",
+      "rm -rf /tmp/scripts"
     ]
     connection {
       type = "ssh"
