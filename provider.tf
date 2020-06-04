@@ -32,9 +32,9 @@ variable "ibmcloud_api_key" {
 provider "ibm" {
 //    region           =  "${var.vpc_region}" #?
     version          = ">= 0.24.4"
-    iaas_classic_username = "${var.ibmcloud_classic_username}"
-    iaas_classic_api_key  = "${var.ibmcloud_classic_apikey}"
-    ibmcloud_api_key = "${var.ibmcloud_api_key}"
+    iaas_classic_username = var.ibmcloud_classic_username
+    iaas_classic_api_key  = var.ibmcloud_classic_apikey
+    ibmcloud_api_key = var.ibmcloud_api_key
 }
 
 provider "null" {
