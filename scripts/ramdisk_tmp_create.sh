@@ -20,4 +20,4 @@ source ${BASEDIR}/env.sh
 echo "Creating ramdisk for install media..."
 sudo mkdir -p $RAMDISK
 sudo chmod 777 $RAMDISK
-sudo mount -t tmpfs -o size=20G ramdisk $RAMDISK
+sudo mount -t tmpfs -o size=30G ramdisk $RAMDISK

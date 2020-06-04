@@ -13,15 +13,12 @@ Once created, its public IP address along with a username and password to log in
 
 More specifically, it creates the following resources:
 
-* a Virtual Private Cloud (VPC)
-* a Subnet
-* a Virtual Server Instance within the VPC and a particular region and availability zone (AZ)
-* a floating IP (FIP) address on the public Internet
-* a security group that allows ingress traffic on port 443 (SSL) and on port 22 (for debug)
+* a Virtual Machine on the Internet
+* security group rules to allow HTTPS traffic
 
 This instance is not backed up, and will expire 90 days from creation. Export any models or datasets before destroying it, and before it expires.
 
-IMPORTANT: Reboots of the VM are not supported, and will result in loss of data. Back up any datasets or models prior to a reboot or shutdown of underlying VPC infrastructure.
+IMPORTANT: Back up any datasets or models prior to destruction of underlying VPC infrastructure.
 
 NOTE: Please note that provisioning may take approximately twenty minutes.
 
@@ -39,7 +36,7 @@ ibm terraform provider: v0.24.x or greater
 
 Use the [IBM Cloud VPC Terraform Documentation](https://cloud.ibm.com/docs/terraform?topic=terraform-getting-started#install) for information on how to install Terraform and the IBM Terraform Provider.
 
-You also need to have an [IBM Cloud API Key](https://cloud.ibm.com/docs/iam?topic=iam-userapikey).
+You also need to have an [IBM Cloud API Key](https://cloud.ibm.com/docs/iam?topic=iam-userapikey), and an [IBM Cloud Classic API Key](https://cloud.ibm.com/docs/iam?topic=iam-classic_keys).
 
 ### Installation Steps
 

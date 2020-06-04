@@ -17,7 +17,7 @@ BASEDIR="$(dirname "$0")"
 # shellcheck disable=SC1090
 source ${BASEDIR}/env.sh
 
-dpkg -i ${RAMDISK}/*trial*.deb
+dpkg -i ${RAMDISK}/*visual-insights*.deb
 LOGFILE=/opt/ibm/vision/install_vision.log
 echo "INFO: Loading IBM Visual Insights Docker images. This will take several minutes..."
 time /opt/ibm/vision/bin/load_images.sh -f ${RAMDISK}/visual-insights-images-*.tar &>${LOGFILE}
