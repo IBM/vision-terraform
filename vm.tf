@@ -65,8 +65,8 @@ variable "vm_profile" {
 #Create a subnet for the application -?
 //resource "ibm_is_subnet" "subnet" {
 //  name = "${var.vm_basename}-subnet1"
-//  vpc = "${ibm_is_vpc.vpc.id}"
-//  zone = "${var.vpc_zone}"
+//  vpc = ibm_is_vpc.vpc.id
+//  zone = var.vpc_zone
 //  ip_version = "ipv4"
 //  total_ipv4_address_count = 32
 //}
@@ -74,13 +74,13 @@ variable "vm_profile" {
 #Create an SSH key which will be used for provisioning by this template, and for debug purposes
 resource "ibm_compute_ssh_key" "public_key" {
   label = "${var.vm_basename}-public-key"
-  public_key = "${tls_private_key.vision_keypair.public_key_openssh}"
+  public_key = tls_private_key.vision_keypair.public_key_openssh
 }
 
 //#Create a public floating IP so that the app is available on the Internet -?
 //resource "ibm_is_floating_ip" "fip1" {
 //  name = "${var.vm_basename}-subnet-fip1"
-//  target = "${ibm_is_instance.vm.primary_network_interface.0.id}"
+//  target = ibm_is_instance.vm.primary_network_interface.0.id
 //}
 
 //#Enable ssh into the instance for debug
@@ -88,7 +88,7 @@ resource "ibm_compute_ssh_key" "public_key" {
 //  depends_on = [
 //    "ibm_is_floating_ip.fip1"
 //  ]
-//  group = "${ibm_is_vpc.vpc.default_security_group}"
+//  group = ibm_is_vpc.vpc.default_security_group
 //  direction = "inbound"
 //  remote = "0.0.0.0/0"
 //
@@ -104,7 +104,7 @@ resource "ibm_compute_ssh_key" "public_key" {
 //  depends_on = [
 //    "ibm_is_floating_ip.fip1"
 //  ]
-//  group = "${ibm_is_vpc.vpc.default_security_group}"
+//  group = ibm_is_vpc.vpc.default_security_group
 //  direction = "inbound"
 //  remote = "0.0.0.0/0"
 //
@@ -119,7 +119,7 @@ resource "ibm_compute_ssh_key" "public_key" {
 //  depends_on = [
 //    "ibm_is_floating_ip.fip1"
 //  ]
-//  group = "${ibm_is_vpc.vpc.default_security_group}"
+//  group = ibm_is_vpc.vpc.default_security_group
 //  direction = "inbound"
 //  remote = "0.0.0.0/0"
 //
@@ -132,7 +132,7 @@ resource "ibm_compute_vm_instance" "vm" {
   hostname             = "${var.vm_basename}-vm1"
   domain               = "vision-terraform.ibmcloudterraform.ibm.com"
   os_reference_code    = "UBUNTU_18_64"
-  datacenter           = "${var.datacenter}"
+  datacenter           = var.datacenter
   network_speed        = 1000
   hourly_billing       = true
   local_disk           = false
@@ -141,7 +141,7 @@ resource "ibm_compute_vm_instance" "vm" {
   disks                = [500] #create a 500GB scratch volume
   dedicated_acct_host_only = false #required to be false per https://cloud.ibm.com/docs/terraform?topic=terraform-infrastructure-resources#vm
   ssh_key_ids          = [
-    "${ibm_compute_ssh_key.public_key.id}"
+    ibm_compute_ssh_key.public_key.id
   ]
 }
 
@@ -163,7 +163,7 @@ resource "tls_private_key" "vision_keypair" {
 resource "null_resource" "provisioners" {
 
   triggers = {
-    vmid = "${ibm_compute_vm_instance.vm.id}"
+    vmid = ibm_compute_vm_instance.vm.id
   }
 
 //  depends_on = [
@@ -178,8 +178,8 @@ resource "null_resource" "provisioners" {
       user = "root"
       agent = false
       timeout = "5m"
-      host = "${ibm_compute_vm_instance.vm.ipv4_address}"
-      private_key = "${tls_private_key.vision_keypair.private_key_pem}"
+      host = ibm_compute_vm_instance.vm.ipv4_address
+      private_key = tls_private_key.vision_keypair.private_key_pem
     }
   }
 
@@ -201,8 +201,8 @@ ENDENVTEMPL
       user = "root"
       agent = false
       timeout = "5m"
-      host = "${ibm_compute_vm_instance.vm.ipv4_address}"
-      private_key = "${tls_private_key.vision_keypair.private_key_pem}"
+      host = ibm_compute_vm_instance.vm.ipv4_address
+      private_key = tls_private_key.vision_keypair.private_key_pem
     }
   }
 
@@ -229,8 +229,8 @@ ENDENVTEMPL
       user = "root"
       agent = false
       timeout = "5m"
-      host = "${ibm_compute_vm_instance.vm.ipv4_address}"
-      private_key = "${tls_private_key.vision_keypair.private_key_pem}"
+      host = ibm_compute_vm_instance.vm.ipv4_address
+      private_key = tls_private_key.vision_keypair.private_key_pem
     }
   }
 }
