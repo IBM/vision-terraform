@@ -14,13 +14,13 @@
 
 
 variable "vision_version" {
-  description = "V.R.M.F of IBM Visual Insights"
-  default = "1.2.0.0"
+  description = "V.R.M.F of IBM Maximo Visual Inspection"
+  default = "1.3.0.0"
 }
 
 variable "vm_basename" {
-  description = "Denotes the name of the VPC that IBM Visual Insights will be deployed into. Resources associated with IBM Visual Insights will be prepended with this name. Keep this at 25 characters or fewer."
-  default = "ibm-visual-insights-trial"
+  description = "Denotes the name of the VPC that IBM Maximo Visual Inspection will be deployed into. Resources associated with IBM Maximo Visual Inspection will be prepended with this name. Keep this at 25 characters or fewer."
+  default = "ibm-mvi-trial"
 }
 
 variable "cos_bucket_base" {
@@ -29,17 +29,17 @@ variable "cos_bucket_base" {
 }
 
 variable "vision_deb_name" {
-  description = "Install debian name (e.g. visual-insights_1.x.y.deb )"
-  default = "visual-insights_1.2.0.0-509.a7da3bf~trial_amd64.deb"
+  description = "Install debian name (e.g. visual-inspection_1.x.y.deb )"
+  default = "visual-inspection_1.3.0.0-552.07b6d7c~trial_amd64.deb"
 }
 
 variable "vision_tar_name" {
-  description = "Install images name (e.g. visual-insights-images-arch-1.x.y.0.tar)"
-  default = "visual-insights-images-x86-1.2.0.0.tar"
+  description = "Install images name (e.g. visual-inspection-images-arch-1.x.y.0.tar)"
+  default = "visual-inspection-images-x86-1.3.0.0.tar"
 }
 
 variable "example_dataset_url" {
-  description = "URL of example dataset to automatically import into Visual Insights."
+  description = "URL of example dataset to automatically import into IBM Maximo Visual Inspection."
   default = "https://vision-cloud-trial.s3.direct.us-east.cloud-object-storage.appdomain.cloud/Bowls-and-Plates.zip"
 }
 
@@ -145,7 +145,7 @@ resource "ibm_compute_vm_instance" "vm" {
   ]
 }
 
-#Create a login password which will be used for the main IBM Visual Insights application
+#Create a login password which will be used for the main application
 resource "random_password" "vision_password" {
   length = 16
   special = true
