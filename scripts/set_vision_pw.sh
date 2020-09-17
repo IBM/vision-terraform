@@ -17,7 +17,7 @@ BASEDIR="$(dirname "$0")"
 # shellcheck disable=SC1090
 source ${BASEDIR}/env.sh
 
-echo "Setting IBM Visual Insights password..."
+echo "Setting IBM Maximo Visual Inspection password..."
 echo "Waiting for authorization services to start up..."
 
 RETRYCOUNT=0
@@ -33,4 +33,4 @@ done
 
 
 /opt/ibm/vision/bin/kubectl.sh run --rm -i --restart=Never usermgt --image=${USERMGTIMAGE} -- modify --user admin --password $1
-echo "IBM Visual Insights password set!"
+echo "IBM Maximo Visual Inspectino password set!"

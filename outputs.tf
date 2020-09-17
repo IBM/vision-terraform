@@ -14,17 +14,17 @@
 
 
 output "vision_url" {
-  value = "https://${ibm_compute_vm_instance.vm.ipv4_address}/visual-insights"
-  description = "IBM Visual Insights URL"
+  value = "https://${ibm_compute_vm_instance.vm.ipv4_address}/visual-inspection"
+  description = "IBM Maximo Visual Inspection URL"
 }
 
 output "vision_username" {
   value = "admin" # The admin always exists on first startup for trial editions of the application, so we hard-code it here for convenience of the user.
-  description = "IBM Visual Insights username"
+  description = "IBM Maximo Visual Inspection username"
 }
 output "vision_password" {
   value = "${random_password.vision_password.result}"
-  description = "IBM Visual Insights password"
+  description = "IBM Maximo Visual Inspection password"
 }
 
 //output "vpc_id" { #?
