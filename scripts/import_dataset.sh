@@ -26,7 +26,7 @@ wget -q -O Dataset.zip $URLPAIVDATASET
 
 echo "SUCCESS: Downloaded example data set successfully."
 
-git clone https://github.com/IBM/vision-tools.git
+git clone --branch 1.3.0.0 https://github.com/IBM/vision-tools.git
 
 powerai_ip=$1
 password=$2

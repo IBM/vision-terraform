@@ -137,7 +137,7 @@ resource "ibm_compute_vm_instance" "vm" {
   hourly_billing       = true
   local_disk           = false
   private_network_only = false
-  flavor_key_name      = "AC2_16X120X100"
+  flavor_key_name      = "${var.vm_profile}"
   disks                = [500] #create a 500GB scratch volume
   dedicated_acct_host_only = false #required to be false per https://cloud.ibm.com/docs/terraform?topic=terraform-infrastructure-resources#vm
   ssh_key_ids          = [
