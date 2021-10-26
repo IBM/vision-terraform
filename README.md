@@ -3,11 +3,12 @@
 IBM Maximo Visual Inspection makes computer vision with deep learning more accessible to business users. IBM Maximo Visual Inspection includes an intuitive toolset that empowers subject matter experts to label, train, and deploy deep learning vision models, without coding or deep learning expertise. It includes the most popular deep learning frameworks and their dependencies, and it is built for easy and rapid deployment and increased team productivity.
 
 ## License Agreement
-By deploying this terraform template via IBM Cloud Schematics or via Terraform, you accept the Terms and Conditions of the [IBM License Agreement for Evaluation of Programs](https://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-CKIE-BL45W3).  If you do not agree to these terms, do not deploy this template.
+By deploying this terraform template via IBM Cloud Schematics or via Terraform, you accept the Terms and Conditions of the [IBM 
+International Program License Agreement](https://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-KBAI-C66PYB).  If you do not agree to these terms, do not deploy this template.
 
 ## Deployment Architecture
 
-This provisions a dedicated instance of IBM Maximo Visual Inspection Trial Edition in IBM Cloud utilizing IBM Cloud Schematics or with standalone Terraform.
+This provisions a dedicated instance of IBM Maximo Visual Inspection Edge in IBM Cloud utilizing IBM Cloud Schematics or with standalone Terraform.
 
 Once created, its public IP address along with a username and password to log into the application will be displayed for easy access.
 
@@ -20,7 +21,9 @@ This instance is not backed up, and will expire 90 days from creation. Export an
 
 IMPORTANT: Back up any datasets or models prior to destruction of underlying VPC infrastructure.
 
-NOTE: Please note that provisioning may take approximately twenty minutes.
+IMPORTANT: You must also have access to the IBM Entitled Container Registry (i.e. you must be able to get an entitlement key from https://myibm.ibm.com/products-services/containerlibrary that allows access to the Maximo Application Suite).
+
+NOTE: Please note that provisioning may take approximately ten minutes.
 
 
 ## Standalone Terraform Deployment Steps
