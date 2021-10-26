@@ -13,17 +13,17 @@
 # limitations under the License.
 
 
-output "vision_url" {
-  value = "https://${ibm_compute_vm_instance.vm.ipv4_address}/visual-inspection"
-  description = "IBM Maximo Visual Inspection URL"
+output "vision_edge_url" {
+  value = "https://${ibm_is_floating_ip.fip1.address}"
+  description = "IBM Maximo Visual Inspection Edge URL"
 }
 
 output "vision_username" {
-  value = "admin" # The admin always exists on first startup for trial editions of the application, so we hard-code it here for convenience of the user.
+  value = "masadmin" # The admin always exists on first startup for trial editions of the application, so we hard-code it here for convenience of the user.
   description = "IBM Maximo Visual Inspection username"
 }
 output "vision_password" {
-  value = "${random_password.vision_password.result}"
+  value = nonsensitive(random_password.vision_password.result)
   description = "IBM Maximo Visual Inspection password"
 }
 
@@ -33,6 +33,7 @@ output "vision_password" {
 //}
 
 output "vision_debug_key" {
-  value = "\n${tls_private_key.vision_keypair.private_key_pem}"
+  value = "\n${nonsensitive(tls_private_key.vision_keypair.private_key_pem)}"
   description = "Instance Private Key (for debug purposes only)"
+
 }

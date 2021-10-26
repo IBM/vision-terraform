@@ -12,15 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations   under the License.
 
-
-variable "ibmcloud_classic_apikey" {
-    description = "Enter your IBM Cloud Classic API Key. To get this key, go to https://cloud.ibm.com/iam/apikeys and generate a new 'Classic Infrastructure API Key'"
-}
-
-variable "ibmcloud_classic_username" {
-  description = "Enter you IBM Cloud Classic Username."
-}
-
 variable "ibmcloud_api_key" {
   description = "Enter your IBM Cloud API Key."
 }
@@ -29,22 +20,36 @@ variable "ibmcloud_api_key" {
 ##               End of variables              ##
 #################################################
 
+terraform {
+  required_providers {
+    ibm = {
+      source = "IBM-Cloud/ibm"
+      version = ">= 1.33.1"
+    }
+    null = {
+      version = ">= 3.1"
+    }
+
+    random = {
+      version = ">= 3.1"
+    }
+    tls = {
+      version = ">= 3.1"
+    }
+  }
+}
+
+
 provider "ibm" {
 //    region           =  "${var.vpc_region}" #?
-    version          = ">= 0.24.4"
-    iaas_classic_username = var.ibmcloud_classic_username
-    iaas_classic_api_key  = var.ibmcloud_classic_apikey
     ibmcloud_api_key = var.ibmcloud_api_key
 }
 
 provider "null" {
-    version = "~> 2.1"
 }
 
 provider "random" {
-    version = "~> 2.2"
 }
 
 provider "tls" {
-    version = "~> 2.1"
 }

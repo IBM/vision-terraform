@@ -13,6 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-IBM_POWERAI_VISION_LICENSE_ACCEPT=yes /opt/ibm/vision/bin/accept-visual-inspection-license.sh
-/opt/ibm/vision/bin/vision-start.sh
-
+BASEDIR="$(dirname "$0")"
+# shellcheck disable=SC1090
+source ${BASEDIR}/env.sh
+mkdir -p /opt/ibm/vision-edge
+echo ${REGISTRY_PASS} | docker login ${REGISTRY_BASE} --username ${REGISTRY_USER} --password-stdin
+docker run --rm -e hostname=$HOSTNAME -v /opt/ibm/vision-edge:/opt/ibm/vision-edge --privileged -u root ${REGISTRY_BASE}${REGISTRY_PATH}/vision-edge-inception:${VISION_VERSION}
+echo "INFO: IBM Maximo Visual Inspection Edge Initialized!"

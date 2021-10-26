@@ -13,24 +13,46 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-BASEDIR="$(dirname "$0")"
-# shellcheck disable=SC1090
-source ${BASEDIR}/env.sh
+INSTALL_ROOT="/opt/ibm/vision-edge"
 
-echo "Setting IBM Maximo Visual Inspection password..."
-echo "Waiting for authorization services to start up..."
+function wait_for_it {
+        echo "Waiting for DB to be ready"
+        PGREADY=false
+        DBREADY=false
+        for _ in {1..60}; do
+                if [ -f "${INSTALL_ROOT}/volume/run/var/initdb" ]; then
+                        DBREADY=true
+                        break
+                else
+                        echo -n "."
+                        sleep 1
+                fi
+        done
+        if $DBREADY; then
+                while ! $PGREADY; do
+                        docker exec vision-edge-controller pg_isready 
+                        if [[ $? -ne 0 ]]; then
+                                sleep 2
+                        else
+                                PGREADY=true
+                        fi
+                done
+        else
+                return 1
+        fi
 
-RETRYCOUNT=0
-RETRYDELAY=120
-MAXRETRIES=5 #300 seconds, or 5 minutes
-until /opt/ibm/vision/bin/kubectl.sh wait --for=condition=available deployment/vision-keycloak --timeout=${RETRYDELAY}s; do
-  RETRYCOUNT=$((RETRYCOUNT + 1))
-  if [ "${RETRYCOUNT}" -eq "${MAXRETRIES}" ]; then
-    echo "ERROR: Keycloak deployment failed to become available within ${MAXRETRIES} attempts of checking."
-    exit 1
-  fi
-done
+        return 0
+}
 
+echo "Setting IBM Maximo Visual Inspection Edge password..."
 
-/opt/ibm/vision/bin/kubectl.sh run --rm -i --restart=Never usermgt --image=${USERMGTIMAGE} -- modify --user admin --password $1
-echo "IBM Maximo Visual Inspectino password set!"
+wait_for_it
+if [[ $? -ne 0 ]]; then
+        echo "Database is taking too long to start... giving up"
+        exit 1
+fi
+
+#read the default password into a variable we can pass to the container... note that
+#this needs to account for special characters which may appear in the password.
+docker exec -it vision-edge-controller /opt/ibm/vision-edge/bin/cli setpasswd -u masadmin -o "VisionP@ssw0rd" -n "${1}"
+echo "IBM Maximo Visual Inspection password set!"

@@ -19,6 +19,12 @@ distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
 curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | \
   sudo tee /etc/apt/sources.list.d/nvidia-docker.list
 sudo apt-get -o Dpkg::Use-Pty=0 update -qq
-sudo apt-get -o Dpkg::Use-Pty=0 install -qq nvidia-docker2
-sudo pkill -SIGHUP dockerd
-echo "SUCCESS: nvidia-docker2 started!"
+sudo apt-get -o Dpkg::Use-Pty=0 install -qq nvidia-docker2 jq
+# back up the docker daemon configuration
+cp /etc/docker/daemon.json /etc/docker/daemon.json.orig
+#set the default docker runtime to the nvidia runtime is installed above
+cat /etc/docker/daemon.json.orig| jq '. + {"default-runtime": "nvidia"}' > /etc/docker/daemon.json
+#restart docker to pick up the changes, and show that the runtime is now the nvidia runtime
+systemctl restart docker
+docker info
+echo "SUCCESS: nvidia-docker2 started, and default docker runtime set to nvidia!"

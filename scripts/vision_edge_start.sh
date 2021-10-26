@@ -17,7 +17,11 @@ BASEDIR="$(dirname "$0")"
 # shellcheck disable=SC1090
 source ${BASEDIR}/env.sh
 
-echo "Creating ramdisk for install media..."
-sudo mkdir -p $RAMDISK
-sudo chmod 777 $RAMDISK
-sudo mount -t tmpfs -o size=30G ramdisk $RAMDISK
+echo "INFO: Starting up Maximo Visual Inspection Edge..."
+
+echo "TERRAFORM_TRIAL_LIC_ACCEPTED" >> /opt/ibm/vision-edge/volume/run/var/config/license/VISIONEDGE.ACCEPTANCE.txt
+date >> /opt/ibm/vision-edge/volume/run/var/config/license/VISIONEDGE.ACCEPTANCE.txt
+date >> /opt/ibm/vision-edge/volume/run/var/initpasswd
+sed -i "s/^PULL_REPO.*/PULL_REPO=${REGISTRY_BASE}${REGISTRY_PATH}/" /opt/ibm/vision-edge/volume/run/var/config/vision-edge.properties
+/opt/ibm/vision-edge/startedge.sh | tee -a /tmp/scripts/start.log
+echo "INFO: Maximo Visual Inspection Edge startup successful!"

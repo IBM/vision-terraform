@@ -36,7 +36,7 @@ export $(blkid "/dev/${diskid}" -o export) #get UUID into a variable...
 #Note we use rbind to ensure docker can rbind itself.
 echo LABEL=${VISION_VOL_LABEL} /data                   xfs     defaults        0 0 >> /etc/fstab
 echo /data/docker /var/lib/docker none defaults,rbind 0 0 >> /etc/fstab
-echo /data/vision /opt/ibm/vision none defaults,rbind 0 0 >> /etc/fstab
+echo /data/vision-edge /opt/ibm/vision-edge none defaults,rbind 0 0 >> /etc/fstab
 #create final mount points before mounting them
 #note this must be performed in the order written below to ensure that mount
 #points and destinations exist
@@ -45,14 +45,14 @@ cat /etc/fstab
 echo "INFO: Setting up mount points and final targets..."
 mkdir /data
 mkdir -p /var/lib/docker
-mkdir -p /opt/ibm/vision
+mkdir -p /opt/ibm/vision-edge
 #mount the data file system ONLY
 echo "INFO: Mounting data volume..."
 mount /data
 echo "INFO: Creating intermediate bind mounts targets..."
 #create bind mount destinations on the data volume
 mkdir /data/docker #create bind mount point on data volume
-mkdir /data/vision #create bind mount point on data volume
+mkdir /data/vision-edge #create bind mount point on data volume
 #complete mounts using systemd to resolve ordering
 mount -a
 echo "SUCCESS: All mount points created and mounted successfully!"

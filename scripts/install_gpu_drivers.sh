@@ -21,12 +21,12 @@ has_gpu_driver=$?
 if [ $has_gpu_driver -ne 0 ]; then
   # Install Nvidia
   echo "INFO: Installing Nvidia drivers..."
-  deb_name=http://us.download.nvidia.com/tesla/440.33.01/nvidia-driver-local-repo-ubuntu1804-440.33.01_1.0-1_amd64.deb
+  deb_name=http://us.download.nvidia.com/tesla/470.57.02/nvidia-driver-local-repo-ubuntu1804-470.57.02_1.0-1_amd64.deb
   wget ${deb_name}
   dpkg -i nvidia-driver-local-repo-ubuntu*.deb
   apt-key add /var/nvidia-driver-local*/*.pub
   apt-get -o Dpkg::Use-Pty=0 update -qq
-  apt-get -o Dpkg::Use-Pty=0 install -qq nvidia-driver-418
+  apt-get -o Dpkg::Use-Pty=0 install -qq nvidia-driver-470
 
   # Purge the repo
   dpkg -P `dpkg -l | grep nvidia-driver-local-repo-ubuntu | cut -d " " -f 3`
